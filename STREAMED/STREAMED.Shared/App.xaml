@@ -1,0 +1,130 @@
+﻿<Application
+    x:Class="STREAMED.App"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:STREAMED"
+    RequestedTheme="Light">
+    
+    <Application.Resources>
+        <Color x:Key="StreamedColor">#3FA9F5</Color>
+        <Color x:Key="PageBgColor">#F9F9F9</Color>
+        <Color x:Key="HeaderBgColor">#F3F5F6</Color>
+
+        <Color x:Key="BlueBgColor">#03A9F4</Color>
+        <Color x:Key="GreenBgColor">#8BC34A</Color>
+        <Color x:Key="OrangeBgColor">#FF8627</Color>
+
+        <Color x:Key="DarkGray">#444444</Color>
+        <Color x:Key="Gray">#999999</Color>
+        
+        <FontFamily x:Key="flaticon">/Assets/flaticon.ttf#FlatIcon</FontFamily>
+        <FontFamily x:Key="fontawesome">/Assets/fontawesome-webfont.ttf#FontAwesome</FontFamily>
+
+        <SolidColorBrush x:Key="StreamedBrush" Color="{StaticResource StreamedColor}" />
+        <SolidColorBrush x:Key="WhiteBrush" Color="White" />
+        <SolidColorBrush x:Key="RedBrush" Color="Red" />
+        <SolidColorBrush x:Key="GrayBrush" Color="{StaticResource Gray}" />
+        <SolidColorBrush x:Key="BlackBrush" Color="Black" />
+        <SolidColorBrush x:Key="DarkGrayBrush" Color="{StaticResource DarkGray}" />
+        <SolidColorBrush x:Key="BlueBrush" Color="{StaticResource BlueBgColor}" />
+        <SolidColorBrush x:Key="GreenBrush" Color="{StaticResource GreenBgColor}" />
+        <SolidColorBrush x:Key="OrangeBrush" Color="{StaticResource OrangeBgColor}" />
+
+        <SolidColorBrush x:Key="PageBgBrush" Color="{StaticResource PageBgColor}" />
+        <SolidColorBrush x:Key="HeaderBgBrush" Color="{StaticResource StreamedColor}" />
+
+        <SolidColorBrush x:Key="ApplicationPageBackgroundThemeBrush" Color="{StaticResource PageBgColor}" />
+        <SolidColorBrush x:Key="DocumentDetailPageBackgroundThemeBrush" Color="Black" />
+        <SolidColorBrush x:Key="ListViewItemOverlayBackgroundThemeBrush" Color="#FFFFFF" />
+        <SolidColorBrush x:Key="ListViewItemOverlayForegroundThemeBrush" Color="{StaticResource DarkGray}" />
+
+        <Style TargetType="Button" x:Key="PositiveButtonStyle">
+            <Setter Property="FontSize" Value="28" />
+            <Setter Property="FontFamily" Value="Meiryo UI" />
+            <Setter Property="Foreground" Value="{StaticResource WhiteBrush}" />
+            <Setter Property="Background" Value="{StaticResource StreamedBrush}" />
+        </Style>
+
+        <Style TargetType="TextBlock" x:Key="AppBarTitleStyle">
+            <Setter Property="FontSize" Value="24" />
+            <Setter Property="FontFamily" Value="Meiryo UI" />
+            <Setter Property="Foreground" Value="{StaticResource DarkGrayBrush}" />
+        </Style>
+
+        <Style TargetType="TextBox" x:Key="InputTextStyle">
+            <Setter Property="FontSize" Value="36" />
+            <Setter Property="FontFamily" Value="Meiryo UI" />
+            <Setter Property="Background" Value="White" />
+        </Style>
+
+        <Style TargetType="TextBox" x:Key="ClientItemStyle">
+            <Setter Property="FontSize" Value="36" />
+            <Setter Property="FontFamily" Value="Meiryo UI" />
+            <Setter Property="Background" Value="White" />
+        </Style>
+
+        <Style TargetType="TextBlock" x:Key="ErrorLabelStyle">
+            <Setter Property="FontSize" Value="26" />
+            <Setter Property="FontFamily" Value="Meiryo UI" />
+            <Setter Property="Foreground" Value="{StaticResource RedBrush}" />
+        </Style>
+
+        <Style TargetType="TextBlock" x:Key="PageTitleStyle">
+            <Setter Property="FontSize" Value="36" />
+            <Setter Property="FontFamily" Value="Meiryo UI" />
+            <Setter Property="Foreground" Value="{StaticResource WhiteBrush}" />
+        </Style>
+
+        <Style TargetType="Border" x:Key="MainMenuBorderStyle">
+            <Setter Property="BorderThickness" Value="4" />
+            <Setter Property="BorderBrush" Value="{StaticResource DarkGrayBrush}" />
+            <Setter Property="Background" Value="{StaticResource WhiteBrush}" />
+            <Setter Property="HorizontalAlignment" Value="Center" />
+            <Setter Property="CornerRadius" Value="5" />
+        </Style>
+
+        <Style TargetType="TextBlock" x:Key="MainMenuIconStyle">
+            <Setter Property="FontSize" Value="180" />
+            <Setter Property="Height" Value="180" />
+            <Setter Property="Margin" Value="0,10,0,0" />
+            <Setter Property="FontFamily" Value="{StaticResource flaticon}" />
+            <Setter Property="Foreground" Value="{StaticResource DarkGrayBrush}" />
+        </Style>
+
+        <Style TargetType="TextBlock" x:Key="SubMenuIconStyle" BasedOn="{StaticResource MainMenuIconStyle}">
+            <Setter Property="Height" Value="90" />
+            <Setter Property="FontSize" Value="90" />
+            <Setter Property="Margin" Value="0,5,0,0" />
+        </Style>
+
+        <Style TargetType="TextBlock" x:Key="MainMenuTextStyle">
+            <Setter Property="FontSize" Value="24" />
+            <Setter Property="FontFamily" Value="Meiryo UI" />
+            <Setter Property="Margin" Value="0,20,0,0" />
+            <Setter Property="Foreground" Value="{StaticResource DarkGrayBrush}" />
+        </Style>
+        
+        <Style TargetType="TextBlock" x:Key="SubMenuTextStyle" BasedOn="{StaticResource MainMenuTextStyle}">
+            <Setter Property="FontSize" Value="21" />
+            <Setter Property="Margin" Value="0,5,0,0" />
+        </Style>
+
+        <Style TargetType="Button" x:Key="MainMenuButtonStyle">
+            <Setter Property="Background" Value="{StaticResource WhiteBrush}" />
+        </Style>
+
+        <Style TargetType="TextBlock" x:Key="ClientNameTextStyle">
+            <Setter Property="FontSize" Value="40" />
+            <Setter Property="FontFamily" Value="Meiryo UI" />
+            <Setter Property="Foreground" Value="{StaticResource WhiteBrush}" />
+        </Style>
+
+        <Style TargetType="Border" x:Key="ClientNameBorderStyle">
+            <Setter Property="BorderThickness" Value="2" />
+            <Setter Property="Background" Value="{StaticResource GreenBrush}" />
+            <Setter Property="HorizontalAlignment" Value="Center" />
+            <Setter Property="CornerRadius" Value="5" />
+        </Style>
+    </Application.Resources>
+
+</Application>
