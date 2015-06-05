@@ -48,6 +48,8 @@ namespace STREAMED
               switch (resultCode)
               {
                 case 0:
+                  // 処理中枚数を最新にするためにクライアントだけ更新
+                  DatabaseManager.GetInstance().syncClient(false);
                   // ログインに成功したら値を保存しておく
                   saveLoginInfo(responseObject);
                   success = true;
@@ -62,6 +64,7 @@ namespace STREAMED
               this.Frame.Navigate(typeof(MainMenuPage));
             }
           }
+          loginButton.Focus(FocusState.Keyboard);
         }
 
         private void loginButton_Tapped(object sender, TappedRoutedEventArgs e)

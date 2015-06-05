@@ -26,9 +26,28 @@ namespace STREAMED
       }
     }
 
+    public static async void showMesssage( String title, String message)
+    {
+      if (title == null)
+      {
+        title = "";
+      }
+      if (message == null)
+      {
+        message = "";
+      }
+      await new MessageDialog(message, title).ShowAsync();
+    }
+
     public static async void showMesssage(String message)
     {
       await new MessageDialog(message).ShowAsync();
+    }
+
+    public static async void openUrl( String url)
+    {
+      var uri = new Uri( url); 
+      await Windows.System.Launcher.LaunchUriAsync(uri);
     }
   }
 }

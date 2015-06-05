@@ -13,7 +13,6 @@ using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
-using Newtonsoft.Json;
 
 // The Basic Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234237
 
@@ -22,7 +21,7 @@ namespace STREAMED
   /// <summary>
   /// A basic page that provides characteristics common to most applications.
   /// </summary>
-  public sealed partial class MainMenuPage : Page
+  public sealed partial class WebViewPage : Page
   {
 
     private NavigationHelper navigationHelper;
@@ -46,7 +45,7 @@ namespace STREAMED
     }
 
 
-    public MainMenuPage()
+    public WebViewPage()
     {
       this.InitializeComponent();
       this.navigationHelper = new NavigationHelper(this);
@@ -68,7 +67,7 @@ namespace STREAMED
     private void navigationHelper_LoadState(object sender, LoadStateEventArgs e)
     {
     }
-
+    
     /// <summary>
     /// Preserves state associated with this page in case the application is suspended or the
     /// page is discarded from the navigation cache.  Values must conform to the serialization
@@ -94,98 +93,40 @@ namespace STREAMED
 
     protected override void OnNavigatedTo(NavigationEventArgs e)
     {
-      navigationHelper.OnNavigatedTo(e);
+      string nameAndUrl = e.Parameter as string;
+      string[] stArrayData = nameAndUrl.Split(',');
+      titleText.Text = stArrayData[0];
+      webView.Navigate(new Uri(stArrayData[1]));
     }
 
     protected override void OnNavigatedFrom(NavigationEventArgs e)
     {
-      navigationHelper.OnNavigatedFrom(e);
     }
 
     #endregion
 
-    private void logoutButton_Clicked(object sender, RoutedEventArgs e)
+    private void backButton_Click(object sender, RoutedEventArgs e)
     {
-      StreamedRequest request = new StreamedRequest();
-      request.logout();
-
       this.Frame.GoBack();
-
-      // 結果に関わらず保存している状態を削除する
-      resetLoginInfo();
-      DatabaseManager.GetInstance().deleteAllTable();
     }
 
-    public static void resetLoginInfo()
+    private void homeButton_Click(object sender, RoutedEventArgs e)
     {
-      SettingUtil.removeValue(SettingUtil.LOGIN_ID_KEY);
-      SettingUtil.removeValue(SettingUtil.MAILADDRESS_KEY);
-      SettingUtil.removeValue(SettingUtil.PASSWORD_KEY);
+      ViewUtil.goHome(this.Frame);
     }
 
-    private void scanButton_Click(object sender, RoutedEventArgs e)
+    private void webView_NavigationStarting(WebView sender, WebViewNavigationStartingEventArgs args)
     {
-      // 顧客選択へ
-      this.Frame.Navigate(typeof(ClientListPage));
     }
 
-    private void uploadButton_Click(object sender, RoutedEventArgs e)
+    private void webView_NavigationCompleted(WebView sender, WebViewNavigationCompletedEventArgs args)
     {
-      this.Frame.Navigate(typeof(DocumentListPage));
+      this.progressRing.IsActive = false;
     }
 
-    private void sycButton_Click(object sender, RoutedEventArgs e)
+    private void webView_NavigationFailed(object sender, WebViewNavigationFailedEventArgs e)
     {
-      progressRing.IsActive = true;
-      try
-      {
-        // 必要なマスタデータを同期
-        DatabaseManager.GetInstance().syncAll();
-        ViewUtil.showMesssage("同期しました", "顧客と勘定科目の情報が最新に更新されました");
-      }
-      finally
-      {
-        progressRing.IsActive = false;
-      }
-    }
-
-    private void settingButton_Click(object sender, RoutedEventArgs e)
-    {
-      this.Frame.Navigate(typeof(SettingPage));
-    }
-
-    private void helpButton_Click(object sender, RoutedEventArgs e)
-    {
-      this.Frame.Navigate(typeof(WebViewPage), "ヘルプ,https://streamed.zendesk.com/hc/ja");
-    }
-
-    private void streamedWebButton_Click(object sender, RoutedEventArgs e)
-    {
-      this.Frame.Navigate(typeof(WebViewPage), "STREAMED Web,https://ssl.streamedup.com/webclient/join");
-    }
-
-    private void pageRoot_Loaded(object sender, RoutedEventArgs e)
-    {
-      uploadSummary();
-    }
-
-    private async void uploadSummary()
-    {
-      DatabaseManager manager = DatabaseManager.GetInstance();
-      List<DocumentSummary> summaryList = await manager.getConnection().QueryAsync<DocumentSummary>("select sum(nReceiptsThisMonth) as numberOfThisMonth, sum(nReceiptsWait) as numberOfWait, sum(nReceiptsThisMonth) -sum(nReceiptsWait) as numberOfProcessed from Client");
-
-      if (summaryList.Count != 0)
-      {
-        DocumentSummary summary = summaryList.ElementAt(0);
-        numberOfProcessText.Text = String.Format( "{0:#,0}枚", summary.numberOfThisMonth);
-        numberOfWaitText.Text = String.Format("{0:#,0}枚", summary.numberOfWait);
-      }
-    }
-
-    private void testButton_Click(object sender, RoutedEventArgs e)
-    {
-      EpsonScanner epsonScan = new EpsonScanner();
-      epsonScan.scan();
+      this.progressRing.IsActive = false;
     }
   }
 }

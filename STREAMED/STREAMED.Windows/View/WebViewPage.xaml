@@ -1,6 +1,6 @@
 ﻿<Page
     x:Name="pageRoot"
-    x:Class="STREAMED.HelpPage"
+    x:Class="STREAMED.WebViewPage"
     DataContext="{Binding DefaultViewModel, RelativeSource={RelativeSource Self}}"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -26,7 +26,7 @@
 
                 <StackPanel Orientation="Horizontal" Grid.Column="0" HorizontalAlignment="Left" Margin="10,0,0,0">
                     <AppBarButton x:Name="backButton" Icon="Back" VerticalAlignment="Center" Width="79" Height="69" Margin="0,10,0,5" Click="backButton_Click" />
-                    <TextBlock Text="{StaticResource AppName}" Margin="0" HorizontalAlignment="Right" VerticalAlignment="Center" Style="{StaticResource AppBarTitleStyle}" />
+                    <TextBlock x:Name="titleText" Text="{StaticResource AppName}" Margin="0" HorizontalAlignment="Right" VerticalAlignment="Center" Style="{StaticResource AppBarTitleStyle}" />
                 </StackPanel>
                 <StackPanel Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center">
                     <ProgressRing x:Name="progressRing" Foreground="{StaticResource StreamedBrush}" HorizontalAlignment="Right" Height="60" Width="60" IsActive="True"/>

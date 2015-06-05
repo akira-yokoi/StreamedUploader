@@ -20,6 +20,12 @@ namespace STREAMED
     public const string REQUEST_ID_KEY = "REQUEST_ID";
     public const string LATEST_VERSION_KEY = "LATEST_VERSION";
 
+    public const string SCANNER_KEY = "SCANNER";
+    public const string SCANNER_TYPE_IX100 = "iX100";
+    public const string SCANNER_TYPE_IX500 = "iX500";
+    public const string SCANNER_TYPE_DS510 = "DS-510";
+    public const string SCANNER_TYPE_DS560 = "DS-560";
+
     public static object get( string key)
     {
       ApplicationDataContainer container = ApplicationData.Current.LocalSettings;

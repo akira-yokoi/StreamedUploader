@@ -21,7 +21,7 @@ namespace STREAMED
   /// <summary>
   /// A basic page that provides characteristics common to most applications.
   /// </summary>
-  public sealed partial class HelpPage : Page
+  public sealed partial class SettingPage : Page
   {
 
     private NavigationHelper navigationHelper;
@@ -45,7 +45,7 @@ namespace STREAMED
     }
 
 
-    public HelpPage()
+    public SettingPage()
     {
       this.InitializeComponent();
       this.navigationHelper = new NavigationHelper(this);
@@ -66,7 +66,6 @@ namespace STREAMED
     /// session. The state will be null the first time a page is visited.</param>
     private void navigationHelper_LoadState(object sender, LoadStateEventArgs e)
     {
-      webView.Navigate( new Uri( "https://streamed.zendesk.com/hc/ja"));
     }
 
     /// <summary>
@@ -95,6 +94,23 @@ namespace STREAMED
     protected override void OnNavigatedTo(NavigationEventArgs e)
     {
       navigationHelper.OnNavigatedTo(e);
+      String scannerType = SettingUtil.getString(SettingUtil.SCANNER_KEY, SettingUtil.SCANNER_TYPE_IX100);
+      if (StringUtil.Equals(scannerType, SettingUtil.SCANNER_TYPE_IX100))
+      {
+        ix100Button.IsChecked = true;
+      }
+      else if (StringUtil.Equals(scannerType, SettingUtil.SCANNER_TYPE_IX500))
+      {
+        ix500Button.IsChecked = true;
+      }
+      else if (StringUtil.Equals(scannerType, SettingUtil.SCANNER_TYPE_DS510))
+      {
+        ds510Button.IsChecked = true;
+      }
+      else if (StringUtil.Equals(scannerType, SettingUtil.SCANNER_TYPE_DS560))
+      {
+        ds560Button.IsChecked = true;
+      }
     }
 
     protected override void OnNavigatedFrom(NavigationEventArgs e)
@@ -103,6 +119,7 @@ namespace STREAMED
     }
 
     #endregion
+
 
     private void backButton_Click(object sender, RoutedEventArgs e)
     {
@@ -114,18 +131,36 @@ namespace STREAMED
       ViewUtil.goHome(this.Frame);
     }
 
-    private void webView_NavigationStarting(WebView sender, WebViewNavigationStartingEventArgs args)
+    private void scanerButton_Clicked(object sender, RoutedEventArgs e)
     {
-    }
-
-    private void webView_NavigationCompleted(WebView sender, WebViewNavigationCompletedEventArgs args)
-    {
-      this.progressRing.IsActive = false;
-    }
-
-    private void webView_NavigationFailed(object sender, WebViewNavigationFailedEventArgs e)
-    {
-      this.progressRing.IsActive = false;
+      if (sender == this.ix100Button)
+      {
+        SettingUtil.putString( SettingUtil.SCANNER_KEY, SettingUtil.SCANNER_TYPE_IX100);
+        ix500Button.IsChecked = false;
+        ds510Button.IsChecked = false;
+        ds560Button.IsChecked = false;
+      }
+      else if (sender == this.ix500Button)
+      {
+        SettingUtil.putString(SettingUtil.SCANNER_KEY, SettingUtil.SCANNER_TYPE_IX500); 
+        ix100Button.IsChecked = false;
+        ds510Button.IsChecked = false;
+        ds560Button.IsChecked = false;
+      }
+      else if (sender == this.ds510Button)
+      {
+        SettingUtil.putString(SettingUtil.SCANNER_KEY, SettingUtil.SCANNER_TYPE_DS510);
+        ix100Button.IsChecked = false;
+        ix500Button.IsChecked = false;
+        ds560Button.IsChecked = false;
+      }
+      else if (sender == this.ds560Button)
+      {
+        SettingUtil.putString(SettingUtil.SCANNER_KEY, SettingUtil.SCANNER_TYPE_DS560);
+        ix100Button.IsChecked = false;
+        ix500Button.IsChecked = false;
+        ds510Button.IsChecked = false;
+      }
     }
   }
 }

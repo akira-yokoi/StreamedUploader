@@ -8,9 +8,9 @@ using Windows.Storage.Streams;
 
 namespace STREAMED
 {
-  class WinUtil
+  class FileUtil
   {
-    private StorageFolder getInstallLocation()
+    public static StorageFolder getInstallLocation()
     {
       StorageFolder storageFolder = Windows.ApplicationModel.Package.Current.InstalledLocation;
       return storageFolder;

@@ -28,9 +28,6 @@ namespace STREAMED
 
     public const int PLAN_ID_ACCOUNTANT = 6;
 
-
-    String SERVER = "";
-
     private String getUrl(String apiName)
     {
       String server = SettingUtil.getString(SettingUtil.SERVER_SETTING_KEY, PRODUCTION_SERVER);
@@ -108,21 +105,23 @@ namespace STREAMED
     {
       /*prepare the URL*/
 
+      String server = null;
       switch (serverID)
       {
         case TESTSERVER:
-          SERVER = TEST_SERVER;
+          server = TEST_SERVER;
           break;
         case PRO_SERVER:
-          SERVER = PRODUCTION_SERVER;
+          server = PRODUCTION_SERVER;
           break;
         case SG_SERVER:
-          SERVER = SINGAPORE_SERVER;
+          server = SINGAPORE_SERVER;
           break;
         case STG_SERVER:
-          SERVER = STAGING_SERVER;
+          server = STAGING_SERVER;
           break;
       }
+      SettingUtil.putString(SettingUtil.SERVER_SETTING_KEY, server);
 
       EasClientDeviceInformation deviceInfo = new EasClientDeviceInformation();
 

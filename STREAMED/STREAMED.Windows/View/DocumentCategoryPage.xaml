@@ -101,7 +101,6 @@
             </Border>
         </StackPanel>
 
-
         <Grid Grid.Row="2" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,0">
             <Grid.RowDefinitions>
                 <RowDefinition Height="50"/>

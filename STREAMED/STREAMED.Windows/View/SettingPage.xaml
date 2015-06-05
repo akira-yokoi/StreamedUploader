@@ -1,0 +1,121 @@
+﻿<Page
+    x:Name="pageRoot"
+    x:Class="STREAMED.SettingPage"
+    DataContext="{Binding DefaultViewModel, RelativeSource={RelativeSource Self}}"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:STREAMED"
+    xmlns:common="using:STREAMED.Common"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Page.Resources>
+        <!-- TODO: Delete this line if the key AppName is declared in App.xaml -->
+        <x:String x:Key="AppName">設定</x:String>
+
+        <Style TargetType="TextBlock" x:Key="ItemTitleLabelStyle">
+            <Setter Property="FontSize" Value="26" />
+            <Setter Property="FontFamily" Value="Meiryo UI" />
+            <Setter Property="Foreground" Value="{StaticResource DarkGrayBrush}" />
+        </Style>
+
+        <Style TargetType="RadioButton" x:Key="RadioItemStyle">
+            <Setter Property="FontSize" Value="26" />
+            <Setter Property="FontFamily" Value="Meiryo UI" />
+            <Setter Property="Foreground" Value="{StaticResource DarkGrayBrush}" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+
+        <Style TargetType="ToggleButton" x:Key="ScannerButtonStyle">
+            <Setter Property="Background" Value="{StaticResource WhiteBrush}" />
+        </Style>
+
+        <Style TargetType="TextBlock" x:Key="ScannerTextStyle">
+            <Setter Property="FontSize" Value="20" />
+            <Setter Property="FontFamily" Value="Meiryo UI" />
+            <Setter Property="Margin" Value="10,0,0,0" />
+        </Style>
+    </Page.Resources>
+
+    <Page.TopAppBar>
+        <AppBar IsSticky="True" IsOpen="True">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Orientation="Horizontal" Grid.Column="0" HorizontalAlignment="Left" Margin="10,0,0,0">
+                    <AppBarButton x:Name="backButton" Icon="Back" VerticalAlignment="Center" Width="79" Height="69" Margin="0,10,0,5" Click="backButton_Click" />
+                    <TextBlock Text="{StaticResource AppName}" Margin="0" HorizontalAlignment="Right" VerticalAlignment="Center" Style="{StaticResource AppBarTitleStyle}" />
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Grid.Column="1" HorizontalAlignment="Right">
+                    <AppBarButton x:Name="homeButton" Label="ホーム" Icon="Home" Click="homeButton_Click" />
+                </StackPanel>
+            </Grid>
+        </AppBar>
+    </Page.TopAppBar>
+
+
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <Grid.ChildrenTransitions>
+            <TransitionCollection>
+                <EntranceThemeTransition/>
+            </TransitionCollection>
+        </Grid.ChildrenTransitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="120"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- ヘッダの背景 -->
+        <Grid Grid.Row="0" Background="{StaticResource HeaderBgBrush}" />
+
+        <Grid Grid.Row="1" VerticalAlignment="Top" Margin="20">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="200" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                <TextBlock Grid.Row="0" Grid.Column="0" Text="スキャナ" Style="{StaticResource ItemTitleLabelStyle}" />
+            </StackPanel>
+            
+            <StackPanel  Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Left" Orientation="Horizontal">
+                    <ToggleButton x:Name="ix100Button" Style="{StaticResource ScannerButtonStyle}" Width="200" Height="80" Checked="scanerButton_Clicked">
+                        <StackPanel VerticalAlignment="Center" Orientation="Horizontal">
+                            <TextBlock Style="{StaticResource ScannerTextStyle}" VerticalAlignment="Center" >
+                                PFU<LineBreak />
+                                iX100
+                            </TextBlock>
+                        </StackPanel>
+                    </ToggleButton>
+                    <ToggleButton x:Name="ix500Button" Style="{StaticResource ScannerButtonStyle}" Width="200" Height="80" Checked="scanerButton_Clicked">
+                        <StackPanel VerticalAlignment="Center" Orientation="Horizontal">
+                            <TextBlock  Style="{StaticResource ScannerTextStyle}" VerticalAlignment="Center" TextAlignment="Center">
+                                PFU<LineBreak />
+                                ix500
+                            </TextBlock>
+                        </StackPanel>
+                    </ToggleButton>
+                    <ToggleButton x:Name="ds510Button" Style="{StaticResource ScannerButtonStyle}" Width="200" Height="80" Checked="scanerButton_Clicked">
+                        <StackPanel VerticalAlignment="Center" Orientation="Horizontal">
+                            <TextBlock  Style="{StaticResource ScannerTextStyle}" VerticalAlignment="Center" TextAlignment="Center">
+                                    EPSON<LineBreak />
+                                DS-510
+                            </TextBlock>
+                        </StackPanel>
+                    </ToggleButton>
+                <ToggleButton x:Name="ds560Button" Style="{StaticResource ScannerButtonStyle}" Width="200" Height="80" Checked="scanerButton_Clicked">
+                    <StackPanel VerticalAlignment="Center" Orientation="Horizontal">
+                        <TextBlock  Style="{StaticResource ScannerTextStyle}" VerticalAlignment="Center" TextAlignment="Center">
+                                    EPSON<LineBreak />
+                                DS-560
+                        </TextBlock>
+                    </StackPanel>
+                </ToggleButton>
+            </StackPanel>
+        </Grid>
+    </Grid>
+</Page>

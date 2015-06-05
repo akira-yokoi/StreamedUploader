@@ -8,7 +8,7 @@
     <OutputType>AppContainerExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>STREAMED</RootNamespace>
-    <AssemblyName>STREAMED.Windows</AssemblyName>
+    <AssemblyName>STREAMED</AssemblyName>
     <DefaultLanguage>ja-JP</DefaultLanguage>
     <TargetPlatformVersion>8.1</TargetPlatformVersion>
     <MinimumVisualStudioVersion>12</MinimumVisualStudioVersion>
@@ -141,8 +141,13 @@
     <Content Include="Assets\WideLogo558x270.png" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="View\HelpPage.xaml.cs">
-      <DependentUpon>HelpPage.xaml</DependentUpon>
+    <Compile Include="Model\DocumentSummary.cs" />
+    <Compile Include="Scanner\EpsonScanner.cs" />
+    <Compile Include="View\SettingPage.xaml.cs">
+      <DependentUpon>SettingPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\WebViewPage.xaml.cs">
+      <DependentUpon>WebViewPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\DocumentDetailPage.xaml.cs">
       <DependentUpon>DocumentDetailPage.xaml</DependentUpon>
@@ -186,7 +191,7 @@
     <Compile Include="Util\SettingUtil.cs" />
     <Compile Include="Util\StreamedRequest.cs" />
     <Compile Include="Util\StringUtil.cs" />
-    <Compile Include="Util\WinUtil.cs" />
+    <Compile Include="Util\FileUtil.cs" />
   </ItemGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest">
@@ -194,11 +199,16 @@
     </AppxManifest>
     <Content Include="Assets\flaticon.ttf" />
     <Content Include="Assets\fontawesome-webfont.ttf" />
+    <None Include="Assets\epsonScanSettings.ssf" />
     <None Include="View\packages.config" />
     <None Include="STREAMED.Windows_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
-    <Page Include="View\HelpPage.xaml">
+    <Page Include="View\SettingPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\WebViewPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

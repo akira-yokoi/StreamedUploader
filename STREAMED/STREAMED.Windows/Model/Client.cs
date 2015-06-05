@@ -17,6 +17,8 @@ namespace STREAMED
     public String set_password { get; set; }
     public String receipt_point { get; set; }
     public String number_of_ticket { get; set; }
+    public int nReceiptsThisMonth { get; set; }
+    public int nReceiptsWait { get; set; }
     public String username { get; set; }
     public String email_activation { get; set; }
     public String accountant_email { get; set; }

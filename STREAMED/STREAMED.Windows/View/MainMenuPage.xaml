@@ -8,7 +8,7 @@
     xmlns:common="using:STREAMED.Common"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    mc:Ignorable="d">
+    mc:Ignorable="d" Loaded="pageRoot_Loaded">
 
     <Page.Resources>
         <!-- TODO: Delete this line if the key AppName is declared in App.xaml -->
@@ -115,7 +115,7 @@
                     <TextBlock HorizontalAlignment="Center" FontFamily="{StaticResource flaticon}" Text="&#xE004;" Margin="20,0" Style="{StaticResource MainInfoIconStyle}" VerticalAlignment="Center"/>
                     <StackPanel Orientation="Vertical" Width="180" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0" Height="75">
                         <TextBlock Text="今月のデータ化" Margin="0" Style="{StaticResource MainInfoTitleTextStyle}" HorizontalAlignment="Right" VerticalAlignment="Top"/>
-                        <TextBlock Text="1,500枚" Style="{StaticResource MainInfoValueTextStyle}" VerticalAlignment="Top" TextAlignment="Right"/>
+                        <TextBlock x:Name="numberOfProcessText" Text="0枚" Style="{StaticResource MainInfoValueTextStyle}" VerticalAlignment="Top" TextAlignment="Right"/>
                     </StackPanel>
                 </StackPanel>
             </Border>
@@ -125,7 +125,7 @@
                     <TextBlock HorizontalAlignment="Center" FontFamily="{StaticResource flaticon}" Text="&#xe012;" Margin="20,0" Style="{StaticResource MainInfoIconStyle}" VerticalAlignment="Center"/>
                     <StackPanel Orientation="Vertical" Width="180" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0" Height="75">
                         <TextBlock Text="データ化待ち" Margin="0" Style="{StaticResource MainInfoTitleTextStyle}" HorizontalAlignment="Right" VerticalAlignment="Top"/>
-                        <TextBlock Text="15枚" Style="{StaticResource MainInfoValueTextStyle}" VerticalAlignment="Top" TextAlignment="Right"/>
+                        <TextBlock x:Name="numberOfWaitText" Text="0枚" Style="{StaticResource MainInfoValueTextStyle}" VerticalAlignment="Top" TextAlignment="Right"/>
                     </StackPanel>
                 </StackPanel>
             </Border>
@@ -135,7 +135,7 @@
                     <TextBlock HorizontalAlignment="Center" FontFamily="{StaticResource flaticon}" Text="&#xE002;" Margin="20,0" Style="{StaticResource MainInfoIconStyle}" VerticalAlignment="Center"/>
                     <StackPanel Orientation="Vertical" Width="180" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0" Height="75">
                         <TextBlock Text="アップロード待ち" Margin="0" Style="{StaticResource MainInfoTitleTextStyle}" HorizontalAlignment="Right" VerticalAlignment="Top"/>
-                        <TextBlock Text="0枚" Style="{StaticResource MainInfoValueTextStyle}" VerticalAlignment="Top" TextAlignment="Right"/>
+                        <TextBlock x:Name="numberOfWaitUploadText" Text="0枚" Style="{StaticResource MainInfoValueTextStyle}" VerticalAlignment="Top" TextAlignment="Right"/>
                     </StackPanel>
                 </StackPanel>
             </Border>
@@ -146,7 +146,7 @@
                 <ColumnDefinition Width="330"/>
                 <ColumnDefinition Width="330"/>
                 <ColumnDefinition Width="330"/>
-                <ColumnDefinition Width="330"/>
+                <ColumnDefinition Width="360"/>
             </Grid.ColumnDefinitions>
 
             <Border Grid.Column="0" Style="{StaticResource MainMenuBorderStyle}" >
@@ -187,7 +187,7 @@
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
                     
-                    <Border Grid.Row="0" Grid.Column="0" Style="{StaticResource MainMenuBorderStyle}">
+                    <Border Grid.Row="0" Grid.Column="0" Style="{StaticResource MainMenuBorderStyle}" Margin="0,0,5,0">
                         <Button x:Name="settingButton" Style="{StaticResource MainMenuButtonStyle}" Click="settingButton_Click">
                             <StackPanel VerticalAlignment="Top" Height="130" Width="130">
                                 <TextBlock HorizontalAlignment="Center" FontFamily="{StaticResource fontawesome}" Text="&#xF085;" Style="{StaticResource SubMenuIconStyle}"/>
@@ -196,7 +196,26 @@
                         </Button>
                     </Border>
 
-                    <Border Grid.Row="1" Grid.Column="1" Style="{StaticResource MainMenuBorderStyle}">
+                    <Border Grid.Row="0" Grid.Column="1" Style="{StaticResource MainMenuBorderStyle}" Margin="5,0,5,0">
+                        <Button x:Name="streamedWebButton" Style="{StaticResource MainMenuButtonStyle}" Click="streamedWebButton_Click">
+                            <StackPanel VerticalAlignment="Top" Height="130" Width="130">
+                                <TextBlock HorizontalAlignment="Center" FontFamily="{StaticResource fontawesome}" Text="&#xF0AC;" Style="{StaticResource SubMenuIconStyle}"/>
+                                <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="Web版" Style="{StaticResource SubMenuTextStyle}"/>
+                            </StackPanel>
+                        </Button>
+                    </Border>
+
+
+                    <Border Grid.Row="1" Grid.Column="0" Style="{StaticResource MainMenuBorderStyle}" Margin="0,5,5,0">
+                        <Button x:Name="testButton" Style="{StaticResource MainMenuButtonStyle}" Click="testButton_Click">
+                            <StackPanel VerticalAlignment="Top" Height="130" Width="130">
+                                <TextBlock HorizontalAlignment="Center" FontFamily="{StaticResource fontawesome}" Text="&#xF188;" Style="{StaticResource SubMenuIconStyle}"/>
+                                <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="テスト" Style="{StaticResource SubMenuTextStyle}"/>
+                            </StackPanel>
+                        </Button>
+                    </Border>
+
+                    <Border Grid.Row="1" Grid.Column="1" Style="{StaticResource MainMenuBorderStyle}" Margin="0,5,5,0">
                         <Button x:Name="helpButton" Style="{StaticResource MainMenuButtonStyle}" Click="helpButton_Click">
                             <StackPanel VerticalAlignment="Top" Height="130" Width="130">
                                 <TextBlock HorizontalAlignment="Center" FontFamily="{StaticResource fontawesome}" Text="&#xF128;" Style="{StaticResource SubMenuIconStyle}"/>

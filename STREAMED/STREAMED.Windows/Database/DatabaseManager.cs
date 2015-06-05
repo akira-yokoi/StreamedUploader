@@ -45,10 +45,10 @@ namespace STREAMED
 
     public void syncAll()
     {
-      syncClient();
+      syncClient( true);
     }
 
-    public async void syncClient()
+    public async void syncClient( bool withCategory)
     {
       StreamedRequest request = new StreamedRequest();
       String response = request.getClientList();
@@ -73,7 +73,13 @@ namespace STREAMED
           }
 
           // クライアントテーブルへの書き込み
-          await connection.DropTableAsync<Client>();
+          try
+          {
+            await connection.DropTableAsync<Client>();
+          }
+          catch (SQLite.SQLiteException ex)
+          {
+          }
           await connection.CreateTableAsync<Client>();
           if (clientList.Count != 0)
           {
@@ -81,11 +87,20 @@ namespace STREAMED
           }
 
           // カテゴリテーブルへの書き込み
-          await connection.DropTableAsync<Category>();
-          await connection.CreateTableAsync<Category>();
-          foreach (Client client in clientList)
+          if (withCategory)
           {
-            syncCategory(client.id);
+            try
+            {
+              await connection.DropTableAsync<Category>();
+            }
+            catch (SQLite.SQLiteException ex)
+            {
+            }
+            await connection.CreateTableAsync<Category>();
+            foreach (Client client in clientList)
+            {
+              syncCategory(client.id);
+            }
           }
           break;
       }
