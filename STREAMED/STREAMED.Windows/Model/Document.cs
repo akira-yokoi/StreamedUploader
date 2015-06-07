@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace STREAMED
 {
+  /**
+   * スキャンしたドキュメント情報を保持するクラス
+   */
   class Document
   {
     [SQLite.AutoIncrement, SQLite.PrimaryKey, SQLite.Indexed]

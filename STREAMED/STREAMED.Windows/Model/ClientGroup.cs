@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace STREAMED
 {
+  /**
+   * 未使用：将来的に顧客情報をグループ化したくなったら使用する
+   */
   public class ClientGroup
   {
     public String GroupName { get; set; }

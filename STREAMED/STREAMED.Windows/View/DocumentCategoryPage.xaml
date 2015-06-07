@@ -146,10 +146,7 @@
             </StackPanel>
             -->
 
-            <StackPanel Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Vertical" Margin="10">
-                <TextBlock Text="摘要（追記）" Style="{StaticResource CategoryLabelStyle}" VerticalAlignment="Center" TextAlignment="Center" Width="600"/>
-                <ComboBox FontSize="50"/>
-            </StackPanel>
+            <StackPanel Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Vertical" Margin="10"/>
         </Grid>
 
         <Border Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Style="{StaticResource ScanBorderStyle}" Width="400" Height="100" Margin="0,0,0,40">

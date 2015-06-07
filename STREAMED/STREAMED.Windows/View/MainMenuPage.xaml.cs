@@ -171,6 +171,7 @@ namespace STREAMED
 
     private async void uploadSummary()
     {
+      Log.debug("uploadSummary");
       DatabaseManager manager = DatabaseManager.GetInstance();
       List<DocumentSummary> summaryList = await manager.getConnection().QueryAsync<DocumentSummary>("select sum(nReceiptsThisMonth) as numberOfThisMonth, sum(nReceiptsWait) as numberOfWait, sum(nReceiptsThisMonth) -sum(nReceiptsWait) as numberOfProcessed from Client");
 

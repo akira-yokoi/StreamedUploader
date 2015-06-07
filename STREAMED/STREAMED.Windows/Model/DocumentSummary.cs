@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace STREAMED
 {
+  /**
+   * メインメニューに表示するサマリ情報を保持するモデル
+   */
   class DocumentSummary
   {
     // 今月処理した枚数

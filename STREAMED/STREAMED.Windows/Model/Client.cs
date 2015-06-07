@@ -7,6 +7,9 @@ using SQLite;
 
 namespace STREAMED
 {
+  /**
+  * 顧客情報を保持するモデル
+  */
   public class Client
   {
     public String id{ get; set; }

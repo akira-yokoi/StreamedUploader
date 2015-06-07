@@ -32,6 +32,8 @@ namespace STREAMED
     private NavigationHelper navigationHelper;
     private ObservableDictionary defaultViewModel = new ObservableDictionary();
 
+    private DefaultCategory defaultCategory = null;
+
     /// <summary>
     /// This can be changed to a strongly typed view model.
     /// </summary>
@@ -113,19 +115,53 @@ namespace STREAMED
       AsyncTableQuery<Category> query = dbManager.getConnection().Table<Category>();
       List<Category> categoryList = await query.Where(x => x.clientId == scanSetting.clientId).ToListAsync();
 
-      Category selectCategory = null;
+      String defaultDebitCategoryName = null;
+      String defaultCreditCategoryName = null;
+      if (scanSetting.documentType == ScanSetting.DOC_TYPE_INVOICE)
+      {
+        defaultCreditCategoryName = "未払金";
+      }
+      else if( scanSetting.documentType == ScanSetting.DOC_TYPE_RECEIPT)
+      {
+        defaultCreditCategoryName = "現金";
+      }
+
+      // デフォルト値をDBから取得
+      AsyncTableQuery<DefaultCategory> defaultCategoryQuery = dbManager.getConnection().Table<DefaultCategory>();
+      List<DefaultCategory> defaultCategoryList = await defaultCategoryQuery.Where(x => x.DocumentType == scanSetting.documentType).ToListAsync();
+      if (defaultCategoryList.Count != 0)
+      {
+        defaultCategory = defaultCategoryList.ElementAt(0);
+        defaultDebitCategoryName = defaultCategory.DebitCategoryName;
+        defaultCreditCategoryName = defaultCategory.CreditCategoryName;
+      }
+
+      Category selectDebitCategory = null;
+      Category selectCreditCategory = null;
       foreach (Category category in categoryList)
       {
         categoryCollection.Add(category);
-        if (category.name.Equals("未払金"))
+        if (category.name.Equals(defaultDebitCategoryName))
         {
-          selectCategory = category;
+          selectDebitCategory = category;
+        }
+
+        if (category.name.Equals(defaultCreditCategoryName))
+        {
+          selectCreditCategory = category;
         }
       }
       this.debitCategoryCombo.DataContext = categoryCollection;
       this.creditCategoryCombo.DataContext = categoryCollection;
 
-      this.debitCategoryCombo.SelectedItem = selectCategory;
+      if (selectDebitCategory != null)
+      {
+        this.debitCategoryCombo.SelectedItem = selectDebitCategory;
+      }
+      if (selectCreditCategory != null)
+      {
+        this.creditCategoryCombo.SelectedItem = selectCreditCategory;
+      }
     }
 
     /*
@@ -147,8 +183,41 @@ namespace STREAMED
       ViewUtil.goHome(this.Frame);
     }
 
-    private void scanButton_Click(object sender, RoutedEventArgs e)
+    private async void scanButton_Click(object sender, RoutedEventArgs e)
     {
+      Category debitCategory = (Category)this.debitCategoryCombo.SelectedItem;
+      Category creditCategory = (Category)this.creditCategoryCombo.SelectedItem;
+
+      if (debitCategory != null)
+      {
+        scanSetting.debitCategoryCode = debitCategory.id;
+        scanSetting.debitCategoryName = debitCategory.name;
+      }
+      if (creditCategory != null) {
+        scanSetting.creditCategoryCode = creditCategory.id;
+        scanSetting.creditCategoryName = creditCategory.name;
+      }
+
+      bool isInsert=  false;
+      if (defaultCategory == null)
+      {
+        defaultCategory = new DefaultCategory();
+        isInsert = true;
+      }
+      defaultCategory.DocumentType = scanSetting.documentType;
+      defaultCategory.DebitCategoryName = scanSetting.debitCategoryName;
+      defaultCategory.CreditCategoryName = scanSetting.creditCategoryName;
+
+
+      DatabaseManager dbManager = DatabaseManager.GetInstance();
+      if( isInsert){
+        await dbManager.getConnection().InsertAsync(defaultCategory);
+      }
+      else
+      {
+        await dbManager.getConnection().UpdateAsync(defaultCategory);
+      }
+
       this.Frame.Navigate(typeof(DocumentListPage), scanSetting);
     }
 

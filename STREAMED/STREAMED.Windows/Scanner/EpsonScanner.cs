@@ -22,6 +22,9 @@ namespace STREAMED
     public async void scan()
     {
       openFile();
+      return;
+
+
 
       String modelName = SettingUtil.getString(SettingUtil.SCANNER_KEY);
       String settingFilePath = FileUtil.getInstallLocation().Path + "\\Assets\\epsonScanSettings.ssf";
@@ -46,6 +49,27 @@ namespace STREAMED
 
     private async void openFile()
     {
+      FolderPicker folderPicker = new FolderPicker();
+      folderPicker.FileTypeFilter.Add(".exe");
+
+      folderPicker.SuggestedStartLocation = PickerLocationId.Desktop;
+
+      StorageFolder folder = await folderPicker.PickSingleFolderAsync();
+      StorageApplicationPermissions.FutureAccessList.AddOrReplace("PickedFolderToken", folder);
+      StorageFile exeFile = await StorageFile.GetFileFromPathAsync(folder.Path + "\\" + "setup.exe");
+
+      LauncherOptions options = new LauncherOptions();
+      options.DisplayApplicationPicker = false;
+      options.TreatAsUntrusted = false;
+      bool success = await Launcher.LaunchFileAsync(exeFile, options);
+
+      /*
+      StorageFolder desktop = await StorageFolder.GetFolderFromPathAsync("C:\\Users\\Tatsuya Kanto\\Desktop\\Test\\Free plan");
+      StorageFile file2 = await StorageFile.GetFileFromPathAsync(desktop.Path + "\\" + "image.jpg");
+      */
+
+      Log.debug("");
+      /*
       // using Windows.Storage.Pickers;
       FileOpenPicker openPicker = new FileOpenPicker();
 
@@ -62,9 +86,12 @@ namespace STREAMED
 
       // jpg, jpeg, pngのファイル形式から選択
       openPicker.FileTypeFilter.Add(".exe");
+      openPicker.FileTypeFilter.Add(".png");
+      openPicker.FileTypeFilter.Add(".jpg");
 
       // ファイルオープンピッカーを起動する
       StorageFile file = await openPicker.PickSingleFileAsync();
+      */
     }
   }
 }

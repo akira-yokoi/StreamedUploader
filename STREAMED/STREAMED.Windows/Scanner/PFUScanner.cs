@@ -12,7 +12,7 @@ using Windows.Storage.AccessCache;
 
 namespace STREAMED
 {
-  class ScanTask
+  class PFUScanner
   {
     private static UIntPtr HKEY_LOCAL_MACHINE = new UIntPtr(0x80000002u);
     public const Int32 WM_COPYDATA = 0x4A;

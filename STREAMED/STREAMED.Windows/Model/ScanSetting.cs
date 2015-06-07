@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace STREAMED
 {
+  /**
+   * スキャンを行うまでに指定された情報を画面間で受け渡すためのモデル
+   */
   class ScanSetting
   {
     public static int DOC_TYPE_RECEIPT = 1;

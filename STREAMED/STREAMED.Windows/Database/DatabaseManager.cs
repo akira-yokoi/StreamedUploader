@@ -45,7 +45,9 @@ namespace STREAMED
 
     public void syncAll()
     {
+      Log.debug("syncAll");
       syncClient( true);
+      Log.debug("syncAll");
     }
 
     public async void syncClient( bool withCategory)
@@ -76,6 +78,7 @@ namespace STREAMED
           try
           {
             await connection.DropTableAsync<Client>();
+            await connection.DropTableAsync<DefaultCategory>();
           }
           catch (SQLite.SQLiteException ex)
           {
@@ -85,6 +88,7 @@ namespace STREAMED
           {
             await connection.InsertAllAsync(clientList);
           }
+          Log.debug("ClientSynced");
 
           // カテゴリテーブルへの書き込み
           if (withCategory)

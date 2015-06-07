@@ -7,6 +7,9 @@ using SQLite;
 
 namespace STREAMED
 {
+  /**
+   * 勘定科目を保持するモデル
+   */
   class Category
   {
     public String clientId { get; set; }
