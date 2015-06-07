@@ -104,10 +104,10 @@ namespace STREAMED
 
     #endregion
 
-    private void logoutButton_Clicked(object sender, RoutedEventArgs e)
+    private async void logoutButton_Clicked(object sender, RoutedEventArgs e)
     {
       StreamedRequest request = new StreamedRequest();
-      request.logout();
+      await request.logout();
 
       this.Frame.GoBack();
 

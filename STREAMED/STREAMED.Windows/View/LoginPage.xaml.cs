@@ -37,10 +37,10 @@ namespace STREAMED
           String mailAddress = SettingUtil.getString(SettingUtil.MAILADDRESS_KEY);
           if (!StringUtil.isEmpty(mailAddress))
           {
-            Task<bool> loginTask = Task.Run(() =>
+            Task<bool> loginTask = Task.Run(async () =>
             {
               StreamedRequest request = new StreamedRequest();
-              String response = request.login();
+              String response = await request.login();
               Dictionary<string, object> responseObject = JsonConvert.DeserializeObject<Dictionary<string, object>>(response);
 
               bool success = false;
@@ -153,13 +153,17 @@ namespace STREAMED
           }
 
           // サーバの情報を保存
-          Task<String> loginTask = Task.Run(() =>
+          Task<String> loginTask = Task.Run(async () =>
           {
             StreamedRequest request = new StreamedRequest();
-            String response = request.joinUserProfile(email, email, password, serverID);
+            String response = await request.joinUserProfile(email, email, password, serverID);
             Dictionary<string, object> responseObject = JsonConvert.DeserializeObject<Dictionary<string, object>>(response);
 
-            int resultCode = Int16.Parse(responseObject["result_code"] as String);
+			int resultCode = -1;
+			if (responseObject != null && responseObject.ContainsKey("result_code"))
+			{
+				resultCode = Int16.Parse(responseObject["result_code"] as String);
+			}
             String errorMessage = null;
             switch (resultCode)
             {
@@ -171,7 +175,7 @@ namespace STREAMED
                 saveLoginInfo(responseObject);
 
                 // プランのチェック
-                errorMessage = checkPlan();
+                errorMessage = await checkPlan();
                 if (errorMessage != null)
                 {
                   // プランチェックに引っかかったらログイン情報を削除
@@ -213,11 +217,11 @@ namespace STREAMED
           }
         }
 
-        private String checkPlan()
+        private async Task<String >checkPlan()
         {
           String errorMessage = null;
           StreamedRequest request = new StreamedRequest();
-          String response = request.getUserPlan();
+          String response = await request.getUserPlan();
           Dictionary<string, object> responseObject = JsonConvert.DeserializeObject<Dictionary<string, object>>(response);
           int resultCode = Int16.Parse(responseObject["result_code"] as String);
           switch (resultCode)

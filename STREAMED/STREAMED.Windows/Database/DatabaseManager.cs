@@ -51,7 +51,7 @@ namespace STREAMED
     public async void syncClient( bool withCategory)
     {
       StreamedRequest request = new StreamedRequest();
-      String response = request.getClientList();
+      String response = await request.getClientList();
       Dictionary<string, object> responseObject = JsonConvert.DeserializeObject<Dictionary<string, object>>(response);
       int resultCode = Int16.Parse(responseObject["result_code"] as String);
       switch (resultCode)
@@ -109,7 +109,7 @@ namespace STREAMED
     public async void syncCategory( String clientId)
     {
       StreamedRequest request = new StreamedRequest();
-      String response = request.getCategoryList( clientId);
+      String response = await request.getCategoryList( clientId);
       Dictionary<string, object> responseObject = JsonConvert.DeserializeObject<Dictionary<string, object>>(response);
       int resultCode = Int16.Parse(responseObject["result_code"] as String);
       switch (resultCode)
