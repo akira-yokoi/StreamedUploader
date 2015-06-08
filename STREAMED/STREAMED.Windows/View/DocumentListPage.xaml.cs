@@ -84,10 +84,7 @@ namespace STREAMED
         document.CreditCategory = "現金";
         document.ImagePath = item.Name;
 
-        var file = await folder.GetFileAsync(item.Name);
-        var stream = await file.OpenReadAsync();
-        document.BMP = new Windows.UI.Xaml.Media.Imaging.BitmapImage();
-        document.BMP.SetSource(stream);
+        document.BMP = await lfMan.getBitmapImage(item.Name);
 
         documentList.Add(document);
       }
@@ -141,7 +138,14 @@ namespace STREAMED
 
     private void uploadButton_Click(object sender, RoutedEventArgs e)
     {
-
+      var docList = this.defaultViewModel["Items"] as List<Document>;
+      if(docList != null && docList.Count > 0)
+      {
+        // TODO
+        var doc = docList[0];
+        var api = new StreamedRequest();
+        api.uploadFile(doc.ImagePath, "", "", doc.CreditCategory, "", "", "", 0);
+      }
     }
 
     private void itemGridView_ItemClick(object sender, ItemClickEventArgs e)

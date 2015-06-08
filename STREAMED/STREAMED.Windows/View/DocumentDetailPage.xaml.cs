@@ -99,11 +99,7 @@ namespace STREAMED
     {
       document = (Document)e.Parameter;
       var lfMan = LocalFileManager.SharedManager;
-      var folder = await lfMan.getStreamedFolder();
-      var file = await folder.GetFileAsync(document.ImagePath);
-      var stream = await file.OpenReadAsync();
-      var bmp = new Windows.UI.Xaml.Media.Imaging.BitmapImage();
-      bmp.SetSource(stream);
+      var bmp = await lfMan.getBitmapImage(document.ImagePath);
 
       bmp.ImageOpened += bmp_ImageOpened;
       this.image.Source = bmp;

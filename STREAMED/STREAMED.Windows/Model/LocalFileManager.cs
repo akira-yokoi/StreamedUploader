@@ -3,7 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.IO;
+using Windows.Graphics.Imaging;
 using Windows.Storage;
+using Windows.Storage.Streams;
+using Windows.UI.Xaml.Media.Imaging;
 
 namespace STREAMED.Model
 {
@@ -47,6 +51,43 @@ namespace STREAMED.Model
       List<StorageFile> flist = new List<StorageFile>(lst);
 
       return flist;
+    }
+
+    public async Task<BitmapImage> getBitmapImage(string filename)
+    {
+      var folder = await getStreamedFolder();
+      var file = await folder.GetFileAsync(filename);
+      var stream = await file.OpenReadAsync();
+      var bmp = new BitmapImage();
+      bmp.SetSource(stream);
+      return bmp;
+    }
+
+    public async Task<string> getImageBase64(string filename)
+    {
+      var folder = await getStreamedFolder();
+      var file = await folder.GetFileAsync(filename);
+      var stream = await file.OpenReadAsync();
+      var decoder = await BitmapDecoder.CreateAsync(stream);
+      var pixels = await decoder.GetPixelDataAsync();
+      var bytes = pixels.DetachPixelData();
+      var str = await ToBase64(bytes, (uint)decoder.PixelWidth, decoder.PixelHeight, decoder.DpiX, decoder.DpiY);
+      return str;
+    }
+
+    private async Task<string> ToBase64(byte[] image,uint height,uint width,double dpiX = 96,double dpiY = 96)
+    {
+      var encoded = new InMemoryRandomAccessStream();
+      var encoder = await BitmapEncoder.CreateAsync(BitmapEncoder.PngEncoderId, encoded);
+      encoder.SetPixelData(BitmapPixelFormat.Bgra8, BitmapAlphaMode.Straight, height, width, dpiX, dpiY, image);
+      await encoder.FlushAsync();
+      encoded.Seek(0);
+
+      var bytes = new byte[encoded.Size];
+      await encoded.AsStream().ReadAsync(bytes, 0, bytes.Length);
+
+      var str = Convert.ToBase64String(bytes);
+      return str;
     }
 
     public async Task createDummyFiles()
