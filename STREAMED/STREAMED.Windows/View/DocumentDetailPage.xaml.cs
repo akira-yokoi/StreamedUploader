@@ -97,7 +97,23 @@ namespace STREAMED
     protected override void OnNavigatedTo(NavigationEventArgs e)
     {
       document = (Document)e.Parameter;
-      this.image.Source = new BitmapImage(new Uri(document.ImagePath));
+      var bmp = new BitmapImage(new Uri(document.ImagePath));
+      bmp.ImageOpened += bmp_ImageOpened;
+      this.image.Source = bmp;
+    }
+
+    /// <summary>
+    /// 画像読み込み完了
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
+    void bmp_ImageOpened(object sender, RoutedEventArgs e)
+    {
+      BitmapImage bmp = sender as BitmapImage;
+
+      // 画像倍率調整
+      float? rate = ((float)scrView.ActualWidth) / ((float)bmp.PixelWidth);
+      scrView.ChangeView(null, null, rate);
     }
 
 

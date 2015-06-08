@@ -206,7 +206,7 @@ namespace STREAMED
 		public String uploadFile(string pathOfFile, string comment, string categoryId,
 			string creditCategoryId, string creditUserCategory, string userCategory, string clientId, int receiptType)
 		{
-			String uploadUrl = getUrl("logout.json");
+      String uploadUrl = getUrl("sync_upload.json");
 
 			/*request ID*/
 			string requestID = SettingUtil.getString(SettingUtil.REQUEST_ID_KEY, null);
@@ -311,6 +311,7 @@ namespace STREAMED
 			catch (TaskCanceledException cex)
 			{
 				Debug.WriteLine("Timeout!!!:" + cex.Message);
+        throw new TimeoutException();
 			}
 			catch (Exception ex)
 			{

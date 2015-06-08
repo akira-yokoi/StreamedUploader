@@ -86,6 +86,7 @@
             <ColumnDefinition Width="100" />
         </Grid.ColumnDefinitions>
 
+      <!--
         <StackPanel Grid.Row="0" Grid.Column="1">
         <Image x:Name="image" ManipulationMode="All" ManipulationDelta="image1_ManipulationDelta" >
             <Image.RenderTransform>
@@ -93,6 +94,13 @@
             </Image.RenderTransform>
         </Image>
         </StackPanel>
+      -->
+    <ScrollViewer x:Name="scrView" Grid.Row="0" Grid.Column="1" 
+                  VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"
+                  ZoomMode="Enabled" 
+                  >
+      <Image x:Name="image" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+    </ScrollViewer>
 
         <Button x:Name="prevImageButton" Grid.Row="0" Grid.Column="0" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Width="100" Background="Black" BorderBrush="Black" BorderThickness="0" Click="prevImageButton_Click">
             <TextBlock x:Name="moveLeft" HorizontalAlignment="Center" FontFamily="{StaticResource fontawesome}" Text="&#xF137;" FontSize="40"/>
