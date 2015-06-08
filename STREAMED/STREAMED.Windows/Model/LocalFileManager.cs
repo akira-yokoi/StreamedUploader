@@ -7,12 +7,25 @@ using Windows.Storage;
 
 namespace STREAMED.Model
 {
-  public class Debugging
+  public class LocalFileManager
   {
     public const string RelPathStreamed = "Streamed";
 
+    private static LocalFileManager _manager;
 
-    public static async Task<StorageFolder> getStreamedFolder()
+    public static LocalFileManager SharedManager
+    {
+      get
+      {
+        if(_manager == null)
+        {
+          _manager = new LocalFileManager();
+        }
+        return _manager;
+      }
+    }
+
+    public async Task<StorageFolder> getStreamedFolder()
     {
       var appFolder = await Windows.Storage.KnownFolders.PicturesLibrary.TryGetItemAsync(RelPathStreamed) as StorageFolder;
 
@@ -25,7 +38,18 @@ namespace STREAMED.Model
       return appFolder;
     }
 
-    public static async Task createDummyFiles()
+    public async Task<List<StorageFile>> getImageFiles()
+    {
+      var folder = await getStreamedFolder();
+
+      var lst = await folder.GetFilesAsync();
+
+      List<StorageFile> flist = new List<StorageFile>(lst);
+
+      return flist;
+    }
+
+    public async Task createDummyFiles()
     {
       var folder = await getStreamedFolder();
 

@@ -109,10 +109,11 @@ namespace STREAMED
       DatabaseManager.GetInstance();
 
       // Picture Library/Streamed フォルダチェック
-      await Debugging.getStreamedFolder();
+      var lfMan = LocalFileManager.SharedManager;
+      await lfMan.getStreamedFolder();
 
       // ダミーファイル作成
-      await Debugging.createDummyFiles();
+      await lfMan.createDummyFiles();
 
       // Ensure the current window is active
       Window.Current.Activate();

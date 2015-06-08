@@ -1,4 +1,5 @@
 ﻿using STREAMED.Common;
+using STREAMED.Model;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -71,6 +72,27 @@ namespace STREAMED
     {
       List<Document> documentList = new List<Document>();
 
+      var lfMan = LocalFileManager.SharedManager;
+      var files = await lfMan.getImageFiles();
+      var folder = await lfMan.getStreamedFolder();
+
+      foreach(var item in files)
+      {
+        Document document = new Document();
+        document.DocumentType = "領収書";
+        document.DebitCategory = "未払金";
+        document.CreditCategory = "現金";
+        document.ImagePath = item.Name;
+
+        var file = await folder.GetFileAsync(item.Name);
+        var stream = await file.OpenReadAsync();
+        document.BMP = new Windows.UI.Xaml.Media.Imaging.BitmapImage();
+        document.BMP.SetSource(stream);
+
+        documentList.Add(document);
+      }
+
+      /*
       for (int cnt = 0; cnt < 50; cnt++)
       {
         Document document = new Document();
@@ -80,7 +102,7 @@ namespace STREAMED
         document.ImagePath = "C:\\Users\\朗\\Pictures\\花・自然\\Nature1.jpg";
         document.ImagePath = "ms-appx:///Assets/images.png";
         documentList.Add(document);
-      }
+      }*/
 
       this.defaultViewModel["Items"] = documentList;
     }

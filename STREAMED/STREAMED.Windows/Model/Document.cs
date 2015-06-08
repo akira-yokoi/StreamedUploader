@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.UI.Xaml.Media.Imaging;
 
 namespace STREAMED
 {
@@ -17,5 +18,6 @@ namespace STREAMED
     public String DebitCategory { get; set; }
     public String CreditCategory { get; set; }
     public String ImagePath { get; set; }
+    public BitmapImage BMP { get; set; }
   }
 }

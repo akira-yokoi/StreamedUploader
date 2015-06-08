@@ -16,6 +16,7 @@ using Windows.UI.Xaml.Navigation;
 using Windows.UI.Xaml.Media.Imaging;
 using Windows.Storage;
 using Windows.Storage.Streams;
+using STREAMED.Model;
 
 // The Basic Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234237
 
@@ -94,10 +95,16 @@ namespace STREAMED
     double maxX = 0;
     double maxY = 0;
 
-    protected override void OnNavigatedTo(NavigationEventArgs e)
+    protected override async void OnNavigatedTo(NavigationEventArgs e)
     {
       document = (Document)e.Parameter;
-      var bmp = new BitmapImage(new Uri(document.ImagePath));
+      var lfMan = LocalFileManager.SharedManager;
+      var folder = await lfMan.getStreamedFolder();
+      var file = await folder.GetFileAsync(document.ImagePath);
+      var stream = await file.OpenReadAsync();
+      var bmp = new Windows.UI.Xaml.Media.Imaging.BitmapImage();
+      bmp.SetSource(stream);
+
       bmp.ImageOpened += bmp_ImageOpened;
       this.image.Source = bmp;
     }
