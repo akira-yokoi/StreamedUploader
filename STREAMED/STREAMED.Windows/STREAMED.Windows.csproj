@@ -141,6 +141,7 @@
     <Content Include="Assets\WideLogo558x270.png" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Model\Debugging.cs" />
     <Compile Include="Model\DefaultCategory.cs" />
     <Compile Include="Model\DocumentSummary.cs" />
     <Compile Include="Model\SqliteMaster.cs" />
