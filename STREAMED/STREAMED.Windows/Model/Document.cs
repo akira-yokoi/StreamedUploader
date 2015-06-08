@@ -18,6 +18,9 @@ namespace STREAMED
     public String DebitCategory { get; set; }
     public String CreditCategory { get; set; }
     public String ImagePath { get; set; }
+
+
+    [SQLite.Ignore]
     public BitmapImage BMP { get; set; }
   }
 }

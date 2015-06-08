@@ -19,6 +19,7 @@ using SQLite;
 using System.Threading;
 using System.Threading.Tasks;
 using STREAMED.Model;
+using STREAMED.Util;
 
 // The Blank Application template is documented at http://go.microsoft.com/fwlink/?LinkId=234227
 
@@ -114,6 +115,9 @@ namespace STREAMED
 
       // ダミーファイル作成
       await lfMan.createDummyFiles();
+
+      // デバイスID作成
+      DeviceID.CreateDeviceID();
 
       // Ensure the current window is active
       Window.Current.Activate();

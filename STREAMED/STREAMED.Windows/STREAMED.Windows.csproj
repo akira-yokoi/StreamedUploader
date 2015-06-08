@@ -146,6 +146,7 @@
     <Compile Include="Model\DocumentSummary.cs" />
     <Compile Include="Model\SqliteMaster.cs" />
     <Compile Include="Scanner\EpsonScanner.cs" />
+    <Compile Include="Util\DeviceID.cs" />
     <Compile Include="View\SettingPage.xaml.cs">
       <DependentUpon>SettingPage.xaml</DependentUpon>
     </Compile>

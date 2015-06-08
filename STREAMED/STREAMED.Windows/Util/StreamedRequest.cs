@@ -110,24 +110,20 @@ namespace STREAMED
 
 		public String getDeviceId()
 		{
-#if DEBUG_SIMU
-			// TODO:デバッグ用ID
-			return "ASAFDASFASDFASDASSS06072220";
-#else
-      return "ASAFDASFASDFASDASSS";
-#endif
+      var devid = SettingUtil.getString(SettingUtil.UNIQUE_ID_KEY);
+      return devid;
 		}
 
-		public string getDeviceModel()
-		{
-#if DEBUG_SIMU
-			// TODO:シミュレータでモデル名が取得できないため
-			return "Simulator";
-#else
+    public string getDeviceModel()
+    {
       EasClientDeviceInformation deviceInfo = new EasClientDeviceInformation();
-	  return deviceInfo.SystemProductName;
-#endif
-		}
+      var devmodel = deviceInfo.SystemProductName;
+      if(string.IsNullOrEmpty(devmodel))
+      {
+        devmodel = "Simulator";
+      }
+      return devmodel;
+    }
 
 		public string getOSVersion()
 		{
