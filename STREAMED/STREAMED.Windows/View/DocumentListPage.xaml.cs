@@ -142,12 +142,12 @@ namespace STREAMED
       ViewUtil.goHome(this.Frame);
     }
 
-    private void uploadButton_Click(object sender, RoutedEventArgs e)
+    private async void uploadButton_Click(object sender, RoutedEventArgs e)
     {
         StreamedRequest api = new StreamedRequest();
         foreach (Document doc in documentList)
         {
-          api.uploadFile(doc.ImagePath, "", doc.DebitCategoryId, doc.CreditCategoryId, doc.CreditUserCategory, doc.DebitUserCategory, doc.ClientId, doc.DocumentType);
+          await api.uploadFile(doc.ImagePath, "", doc.DebitCategoryId, doc.CreditCategoryId, doc.CreditUserCategory, doc.DebitUserCategory, doc.ClientId, doc.DocumentType);
         }
     }
 
