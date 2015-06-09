@@ -50,35 +50,16 @@ namespace STREAMED
           int resultCode = Int16.Parse(responseObject["result_code"] as String);
           switch (resultCode)
           {
-            Task<bool> loginTask = Task.Run(async () =>
-            {
-              StreamedRequest request = new StreamedRequest();
-              String response = await request.login();
-              Dictionary<string, object> responseObject = JsonConvert.DeserializeObject<Dictionary<string, object>>(response);
-
-              bool success = false;
-              int resultCode = Int16.Parse(responseObject["result_code"] as String);
-              switch (resultCode)
+            case 0:
+              // 処理中枚数を最新にするためにクライアントだけ更新
+              bool ret = await DatabaseManager.GetInstance().syncClient();
+              if (ret)
               {
-                case 0:
-                  // 処理中枚数を最新にするためにクライアントだけ更新
-                  bool ret = await DatabaseManager.GetInstance().syncClient();
-                  if (ret)
-                  {
-                    // ログインに成功したら値を保存しておく
-                    saveLoginInfo(responseObject);
-                    success = true;
-                  }
-                  break;
+                // ログインに成功したら値を保存しておく
+                saveLoginInfo(responseObject);
+                success = true;
               }
-              return success;
-            });
-            Task.WaitAny(new Task[] { loginTask });
-            if (loginTask.Result)
-            {
-              // メインメニューへ
-              this.Frame.Navigate(typeof(MainMenuPage));
-            }
+              break;
           }
           return success;
         });
@@ -119,7 +100,7 @@ namespace STREAMED
       return true;
     }
 
-    private void login()
+    private async void login()
     {
       this.progressRing.IsActive = true;
       this.loginButton.IsEnabled = false;
@@ -131,9 +112,15 @@ namespace STREAMED
         if (result == null)
         {
           // 必要なマスタデータを同期
-          DatabaseManager.GetInstance().syncAll();
-          // メインメニューへ
-          this.Frame.Navigate(typeof(MainMenuPage));
+          var manager = DatabaseManager.GetInstance();
+          await manager.syncAll((ret) =>
+          {
+            Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
+            {
+              // メインメニューへ
+              this.Frame.Navigate(typeof(MainMenuPage));
+            });
+          });
         }
         // Fail
         else
@@ -148,41 +135,13 @@ namespace STREAMED
       }
     }
 
-        private async void login()
-        {
-          this.progressRing.IsActive = true;
-          this.loginButton.IsEnabled = false;
+    public String loginProcess()
+    {
+      String testPrefix = "testserver@";
+      String sgPrefix = "sg@";
+      String stagingPrefix = "staging@";
 
-          try
-          {
-            String result = loginProcess();
-            // Success
-            if ( result == null)
-            {
-              // 必要なマスタデータを同期
-              var manager = DatabaseManager.GetInstance();
-              await manager.syncAll((ret)=>{
-
-                Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
-                {
-                  // メインメニューへ
-                  this.Frame.Navigate(typeof(MainMenuPage));
-
-                });
-              });
-            }
-            // Fail
-            else
-            {
-              errorText.Text = result;
-            }
-          }
-          finally
-          {
-            this.progressRing.IsActive = false;
-            this.loginButton.IsEnabled = true;
-          }
-        }
+      int serverID = 0;
 
       String email = mailAddressText.Text;
       String password = passwordText.Password;
@@ -295,7 +254,7 @@ namespace STREAMED
       return errorMessage;
     }
 
-    private async void initTable()
+    private void initTable()
     {
       DatabaseManager dbManager = DatabaseManager.GetInstance();
 
@@ -304,22 +263,22 @@ namespace STREAMED
 .GetAwaiter()
 .GetResult();
 
-      if ( !existingTables.Any(x => x.name == "Client"))
+      if (existingTables.Any(x => x.name == "Client") != true)
       {
         connection.CreateTableAsync<Client>().GetAwaiter().GetResult();
       }
 
-      if ( !existingTables.Any(x => x.name == "Category"))
+      if (existingTables.Any(x => x.name == "Category") != true)
       {
         connection.CreateTableAsync<Category>().GetAwaiter().GetResult();
       }
 
-      if ( !existingTables.Any(x => x.name == "Document"))
+      if (existingTables.Any(x => x.name == "Document") != true)
       {
         connection.CreateTableAsync<Document>().GetAwaiter().GetResult();
       }
 
-      if ( !existingTables.Any(x => x.name == "DefaultCategory"))
+      if (existingTables.Any(x => x.name == "DefaultCategory") != true)
       {
         connection.CreateTableAsync<DefaultCategory>().GetAwaiter().GetResult();
       }

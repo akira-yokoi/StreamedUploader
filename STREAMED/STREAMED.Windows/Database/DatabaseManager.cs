@@ -47,12 +47,13 @@ namespace STREAMED
       var con = getConnection();
       await con.DropTableAsync<Category>();
       await con.DropTableAsync<Client>();
+      await con.DropTableAsync<DefaultCategory>();
+      await con.DropTableAsync<Document>();
     }
 
     public async Task syncAll(Action<bool> completed)
     {
       bool ret = false;
-      Log.debug("syncAll");
       var con = getConnection();
       await con.RunInTransactionAsync(async (SQLiteAsyncConnection con2) =>
       {
@@ -76,7 +77,6 @@ namespace STREAMED
 
         completed(ret);
       });
-      Log.debug("syncAll");
     }
 
     public async Task<bool> syncClient()
@@ -141,7 +141,6 @@ namespace STREAMED
 
             // クライアントテーブルへの書き込み
             await con.DropTableAsync<Client>();
-            await con.DropTableAsync<DefaultCategory>();
             await con.CreateTableAsync<Client>();
             if (clientList.Count != 0)
             {
