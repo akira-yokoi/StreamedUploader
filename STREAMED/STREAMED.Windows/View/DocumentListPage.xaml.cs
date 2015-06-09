@@ -25,6 +25,10 @@ namespace STREAMED
   /// </summary>
   public sealed partial class DocumentListPage : Page
   {
+    private List<Document> documentList;
+
+    private ScanSetting scanSetting;
+
     private NavigationHelper navigationHelper;
     private ObservableDictionary defaultViewModel = new ObservableDictionary();
 
@@ -65,7 +69,6 @@ namespace STREAMED
     /// session.  The state will be null the first time a page is visited.</param>
     private void navigationHelper_LoadState(object sender, LoadStateEventArgs e)
     {
-      loadDocument();
     }
 
     private async void loadDocument()
@@ -79,10 +82,13 @@ namespace STREAMED
       foreach(var item in files)
       {
         Document document = new Document();
-        document.DocumentType = "領収書";
-        document.DebitCategory = "未払金";
-        document.CreditCategory = "現金";
-        document.ImagePath = item.Name;
+        document.DocumentType = ScanSetting.DOC_TYPE_RECEIPT;
+        document.DebitCategoryId = scanSetting.debitCategoryId;
+        document.DebitCategoryName = scanSetting.debitCategoryName;
+        document.DebitUserCategory = scanSetting.debitUserCategory;
+        document.CreditCategoryId = scanSetting.creditCategoryId;
+        document.CreditCategoryName = scanSetting.creditCategoryName;
+        document.CreditUserCategory = scanSetting.creditUserCategory;
 
         document.BMP = await lfMan.getBitmapImage(item.Name);
 
@@ -117,12 +123,12 @@ namespace STREAMED
 
     protected override void OnNavigatedTo(NavigationEventArgs e)
     {
-      navigationHelper.OnNavigatedTo(e);
+      scanSetting = (ScanSetting)e.Parameter;
+      loadDocument();
     }
 
     protected override void OnNavigatedFrom(NavigationEventArgs e)
     {
-      navigationHelper.OnNavigatedFrom(e);
     }
 
     #endregion
@@ -138,14 +144,11 @@ namespace STREAMED
 
     private void uploadButton_Click(object sender, RoutedEventArgs e)
     {
-      var docList = this.defaultViewModel["Items"] as List<Document>;
-      if(docList != null && docList.Count > 0)
-      {
-        // TODO
-        var doc = docList[0];
-        var api = new StreamedRequest();
-        api.uploadFile(doc.ImagePath, "", "", doc.CreditCategory, "", "", "", 0);
-      }
+        StreamedRequest api = new StreamedRequest();
+        foreach (Document doc in documentList)
+        {
+          api.uploadFile(doc.ImagePath, "", doc.DebitCategoryId, doc.CreditCategoryId, doc.CreditUserCategory, doc.DebitUserCategory, doc.ClientId, doc.DocumentType);
+        }
     }
 
     private void itemGridView_ItemClick(object sender, ItemClickEventArgs e)

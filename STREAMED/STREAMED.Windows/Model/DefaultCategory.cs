@@ -11,8 +11,13 @@ namespace STREAMED
    */
   class DefaultCategory
   {
+    [SQLite.AutoIncrement, SQLite.PrimaryKey, SQLite.Indexed]
+    public int id { get; set; }
+
     public int DocumentType { get; set; }
+
     public String DebitCategoryName { get; set; }
+
     public String CreditCategoryName { get; set; }
   }
 }

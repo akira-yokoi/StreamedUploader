@@ -190,11 +190,11 @@ namespace STREAMED
 
       if (debitCategory != null)
       {
-        scanSetting.debitCategoryCode = debitCategory.id;
+        scanSetting.debitCategoryId = debitCategory.id;
         scanSetting.debitCategoryName = debitCategory.name;
       }
       if (creditCategory != null) {
-        scanSetting.creditCategoryCode = creditCategory.id;
+        scanSetting.creditCategoryId = creditCategory.id;
         scanSetting.creditCategoryName = creditCategory.name;
       }
 

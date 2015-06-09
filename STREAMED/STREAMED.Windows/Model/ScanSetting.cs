@@ -12,21 +12,23 @@ namespace STREAMED
   class ScanSetting
   {
     public static int DOC_TYPE_RECEIPT = 1;
-    public static int DOC_TYPE_INVOICE = 2;
-    public static int DOC_TYPE_BANKBOOK = 3;
-    public static int DOC_TYPE_CREDITCARD = 4;
+    public static int DOC_TYPE_INVOICE = 3;
+    public static int DOC_TYPE_BANKBOOK = 5;
+    public static int DOC_TYPE_CREDITCARD = 7;
 
     public String clientId { get; set; }
     public String clientName { get; set; }
     public int documentType { get; set; }
-    public String debitCategoryCode { get; set; }
+    public String debitCategoryId { get; set; }
     public String debitCategoryName { get; set; }
-    public String debitSubCategoryCode { get; set; }
+    public String debitSubCategoryId { get; set; }
     public String debitSubCategoryName { get; set; }
-    public String creditCategoryCode { get; set; }
+    public String debitUserCategory { get; set; }
+    public String creditCategoryId { get; set; }
     public String creditCategoryName { get; set; }
-    public String creditSubCategoryCode { get; set; }
+    public String creditSubCategoryId { get; set; }
     public String creditSubCategoryName { get; set; }
+    public String creditUserCategory { get; set; }
 
     public String getDocumentTypeName()
     {
