@@ -134,18 +134,31 @@ namespace STREAMED
       this.Frame.Navigate(typeof(DocumentListPage));
     }
 
-    private void sycButton_Click(object sender, RoutedEventArgs e)
+    private async void sycButton_Click(object sender, RoutedEventArgs e)
     {
       progressRing.IsActive = true;
       try
       {
         // 必要なマスタデータを同期
-        DatabaseManager.GetInstance().syncAll();
-        ViewUtil.showMesssage("同期しました", "顧客と勘定科目の情報が最新に更新されました");
+        await DatabaseManager.GetInstance().syncAll((ret) =>
+        {
+          Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
+          {
+            progressRing.IsActive = false;
+            if (ret)
+            {
+              ViewUtil.showMesssage("同期しました", "顧客と勘定科目の情報が最新に更新されました");
+            }
+            else
+            {
+              ViewUtil.showMesssage("同期処理に失敗しました");
+            }
+
+          });
+        });
       }
       finally
       {
-        progressRing.IsActive = false;
       }
     }
 

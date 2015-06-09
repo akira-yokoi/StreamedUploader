@@ -50,13 +50,35 @@ namespace STREAMED
           int resultCode = Int16.Parse(responseObject["result_code"] as String);
           switch (resultCode)
           {
-            case 0:
-              // 処理中枚数を最新にするためにクライアントだけ更新
-              DatabaseManager.GetInstance().syncClient(false);
-              // ログインに成功したら値を保存しておく
-              saveLoginInfo(responseObject);
-              success = true;
-              break;
+            Task<bool> loginTask = Task.Run(async () =>
+            {
+              StreamedRequest request = new StreamedRequest();
+              String response = await request.login();
+              Dictionary<string, object> responseObject = JsonConvert.DeserializeObject<Dictionary<string, object>>(response);
+
+              bool success = false;
+              int resultCode = Int16.Parse(responseObject["result_code"] as String);
+              switch (resultCode)
+              {
+                case 0:
+                  // 処理中枚数を最新にするためにクライアントだけ更新
+                  bool ret = await DatabaseManager.GetInstance().syncClient();
+                  if (ret)
+                  {
+                    // ログインに成功したら値を保存しておく
+                    saveLoginInfo(responseObject);
+                    success = true;
+                  }
+                  break;
+              }
+              return success;
+            });
+            Task.WaitAny(new Task[] { loginTask });
+            if (loginTask.Result)
+            {
+              // メインメニューへ
+              this.Frame.Navigate(typeof(MainMenuPage));
+            }
           }
           return success;
         });
@@ -126,13 +148,41 @@ namespace STREAMED
       }
     }
 
-    public String loginProcess()
-    {
-      String testPrefix = "testserver@";
-      String sgPrefix = "sg@";
-      String stagingPrefix = "staging@";
+        private async void login()
+        {
+          this.progressRing.IsActive = true;
+          this.loginButton.IsEnabled = false;
 
-      int serverID = 0;
+          try
+          {
+            String result = loginProcess();
+            // Success
+            if ( result == null)
+            {
+              // 必要なマスタデータを同期
+              var manager = DatabaseManager.GetInstance();
+              await manager.syncAll((ret)=>{
+
+                Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
+                {
+                  // メインメニューへ
+                  this.Frame.Navigate(typeof(MainMenuPage));
+
+                });
+              });
+            }
+            // Fail
+            else
+            {
+              errorText.Text = result;
+            }
+          }
+          finally
+          {
+            this.progressRing.IsActive = false;
+            this.loginButton.IsEnabled = true;
+          }
+        }
 
       String email = mailAddressText.Text;
       String password = passwordText.Password;

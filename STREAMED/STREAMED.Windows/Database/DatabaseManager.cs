@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using SQLite;
 using Newtonsoft.Json;
+using System.Diagnostics;
 
 namespace STREAMED
 {
@@ -13,7 +14,7 @@ namespace STREAMED
   {
     private static DatabaseManager instance = new DatabaseManager();
 
-    private SQLiteAsyncConnection connection;
+    private SQLiteAsyncConnection _connection;
 
     public static DatabaseManager GetInstance()
     {
@@ -27,31 +28,93 @@ namespace STREAMED
 
     private async void initDatabase()
     {
-      connection = new SQLiteAsyncConnection("streamed");
-      await connection.CreateTableAsync<Category>();
-      await connection.CreateTableAsync<Client>();
+      var con = getConnection();
+      await con.CreateTableAsync<Category>();
+      await con.CreateTableAsync<Client>();
     }
 
     public SQLiteAsyncConnection getConnection()
     {
-      return connection;
+      if (_connection == null)
+      {
+        _connection = new SQLiteAsyncConnection("streamed");
+      }
+      return _connection;
     }
 
     public async void deleteAllTable()
     {
-      await connection.DropTableAsync<Category>();
-      await connection.DropTableAsync<Client>();
+      var con = getConnection();
+      await con.DropTableAsync<Category>();
+      await con.DropTableAsync<Client>();
     }
 
-    public void syncAll()
+    public async Task syncAll(Action<bool> completed)
     {
+      bool ret = false;
       Log.debug("syncAll");
-      syncClient( true);
+      var con = getConnection();
+      await con.RunInTransactionAsync(async (SQLiteAsyncConnection con2) =>
+      {
+        try
+        {
+          var clientList = await _syncClient(con2);
+
+          // カテゴリテーブルへの書き込み
+          await con2.DropTableAsync<Category>();
+          await con2.CreateTableAsync<Category>();
+          foreach (Client client in clientList)
+          {
+            await _syncCategory(client.id, con2);
+          }
+          ret = true;
+        }
+        catch
+        {
+
+        }
+
+        completed(ret);
+      });
       Log.debug("syncAll");
     }
 
-    public async void syncClient( bool withCategory)
+    public async Task<bool> syncClient()
     {
+      bool ret = false;
+      try
+      {
+        var con = getConnection();
+        await _syncClient(con);
+        ret = true;
+      }
+      catch (SQLiteException ex)
+      {
+        Debug.WriteLine("syncClient:Exception:" + ex.Message);
+      }
+      return ret;
+    }
+
+    public async Task<bool> syncCategory(String clientId)
+    {
+      bool ret = false;
+      try
+      {
+        var con = getConnection();
+        await _syncCategory(clientId, con);
+        ret = true;
+      }
+      catch (SQLiteException ex)
+      {
+        Debug.WriteLine("syncCategory:Exception:" + ex.Message);
+      }
+      return ret;
+    }
+
+
+    private async Task<List<Client>> _syncClient(SQLiteAsyncConnection con)
+    {
+      List<Client> clientList = null;
       StreamedRequest request = new StreamedRequest();
       String response = await request.getClientList();
       Dictionary<string, object> responseObject = JsonConvert.DeserializeObject<Dictionary<string, object>>(response);
@@ -59,61 +122,46 @@ namespace STREAMED
       switch (resultCode)
       {
         case 0:
-          // 成功した場合はクライアントを取り出す
-          var data = responseObject["data"];
-          Dictionary<string, object> dataDict = JsonConvert.DeserializeObject<Dictionary<string, object>>(data.ToString());
-          var clients = dataDict["clients"];
-
-          Dictionary<string, object> clientDict = JsonConvert.DeserializeObject<Dictionary<string, object>>(clients.ToString());
-          List<object> valsList = new List<object>(clientDict.Values);
-
-          List<Client> clientList = new List<Client>();
-          foreach (object val in valsList)
-          {
-            Client client = JsonConvert.DeserializeObject<Client>(val.ToString());
-            clientList.Add(client);
-          }
-
-          // クライアントテーブルへの書き込み
           try
           {
-            await connection.DropTableAsync<Client>();
-            await connection.DropTableAsync<DefaultCategory>();
-          }
-          catch (SQLite.SQLiteException ex)
-          {
-          }
-          await connection.CreateTableAsync<Client>();
-          if (clientList.Count != 0)
-          {
-            await connection.InsertAllAsync(clientList);
-          }
-          Log.debug("ClientSynced");
+            // 成功した場合はクライアントを取り出す
+            var data = responseObject["data"];
+            Dictionary<string, object> dataDict = JsonConvert.DeserializeObject<Dictionary<string, object>>(data.ToString());
+            var clients = dataDict["clients"];
 
-          // カテゴリテーブルへの書き込み
-          if (withCategory)
+            Dictionary<string, object> clientDict = JsonConvert.DeserializeObject<Dictionary<string, object>>(clients.ToString());
+            List<object> valsList = new List<object>(clientDict.Values);
+
+            clientList = new List<Client>();
+            foreach (object val in valsList)
+            {
+              Client client = JsonConvert.DeserializeObject<Client>(val.ToString());
+              clientList.Add(client);
+            }
+
+            // クライアントテーブルへの書き込み
+            await con.DropTableAsync<Client>();
+            await con.DropTableAsync<DefaultCategory>();
+            await con.CreateTableAsync<Client>();
+            if (clientList.Count != 0)
+            {
+              await con.InsertAllAsync(clientList);
+            }
+            Log.debug("ClientSynced");
+          }
+          catch(SQLiteException ex)
           {
-            try
-            {
-              await connection.DropTableAsync<Category>();
-            }
-            catch (SQLite.SQLiteException ex)
-            {
-            }
-            await connection.CreateTableAsync<Category>();
-            foreach (Client client in clientList)
-            {
-              syncCategory(client.id);
-            }
+            throw ex;
           }
           break;
       }
+      return clientList;
     }
 
-    public async void syncCategory( String clientId)
+    private async Task _syncCategory(String clientId, SQLiteAsyncConnection con)
     {
       StreamedRequest request = new StreamedRequest();
-      String response = await request.getCategoryList( clientId);
+      String response = await request.getCategoryList(clientId);
       Dictionary<string, object> responseObject = JsonConvert.DeserializeObject<Dictionary<string, object>>(response);
       int resultCode = Int16.Parse(responseObject["result_code"] as String);
       switch (resultCode)
@@ -133,9 +181,13 @@ namespace STREAMED
 
           if (categoryList.Count != 0)
           {
-            await connection.InsertAllAsync(categoryList);
+            await con.InsertAllAsync(categoryList);
           }
           break;
+
+        default:
+
+          throw new Exception("カテゴリリスト取得失敗");
       }
     }
   }
