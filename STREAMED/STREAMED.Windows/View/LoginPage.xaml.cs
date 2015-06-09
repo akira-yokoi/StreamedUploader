@@ -52,10 +52,13 @@ namespace STREAMED
               {
                 case 0:
                   // 処理中枚数を最新にするためにクライアントだけ更新
-                  DatabaseManager.GetInstance().syncClient(false);
-                  // ログインに成功したら値を保存しておく
-                  saveLoginInfo(responseObject);
-                  success = true;
+                  bool ret = await DatabaseManager.GetInstance().syncClient();
+                  if (ret)
+                  {
+                    // ログインに成功したら値を保存しておく
+                    saveLoginInfo(responseObject);
+                    success = true;
+                  }
                   break;
               }
               return success;
@@ -96,7 +99,7 @@ namespace STREAMED
           return true;
         }
 
-        private void login()
+        private async void login()
         {
           this.progressRing.IsActive = true;
           this.loginButton.IsEnabled = false;
@@ -108,9 +111,16 @@ namespace STREAMED
             if ( result == null)
             {
               // 必要なマスタデータを同期
-              DatabaseManager.GetInstance().syncAll();
-              // メインメニューへ
-              this.Frame.Navigate(typeof(MainMenuPage));
+              var manager = DatabaseManager.GetInstance();
+              await manager.syncAll((ret)=>{
+
+                Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
+                {
+                  // メインメニューへ
+                  this.Frame.Navigate(typeof(MainMenuPage));
+
+                });
+              });
             }
             // Fail
             else
