@@ -205,6 +205,7 @@
     <Content Include="Assets\flaticon.ttf" />
     <Content Include="Assets\fontawesome-webfont.ttf" />
     <None Include="Assets\epsonScanSettings.ssf" />
+    <None Include="packages.config" />
     <None Include="View\packages.config" />
     <None Include="STREAMED.Windows_TemporaryKey.pfx" />
   </ItemGroup>
@@ -249,6 +250,9 @@
   <ItemGroup>
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\..\packages\Newtonsoft.Json.6.0.8\lib\netcore45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="WriteableBitmapEx.WinRT">
+      <HintPath>..\..\packages\WriteableBitmapEx.1.5.0.0\lib\NetCore45\WriteableBitmapEx.WinRT.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
