@@ -108,6 +108,7 @@ namespace STREAMED
 
       // データベースの初期化
       DatabaseManager.GetInstance();
+      this.initTable();
 
       // Picture Library/Streamed フォルダチェック
       var lfMan = LocalFileManager.SharedManager;
@@ -150,6 +151,36 @@ namespace STREAMED
 
       // TODO: Save application state and stop any background activity
       deferral.Complete();
+    }
+
+    private void initTable()
+    {
+      DatabaseManager dbManager = DatabaseManager.GetInstance();
+
+      SQLiteAsyncConnection connection = dbManager.getConnection();
+      var existingTables = connection.QueryAsync<SqliteMaster>("SELECT name FROM sqlite_master WHERE type='table' ORDER BY name;")
+.GetAwaiter()
+.GetResult();
+
+      if (!existingTables.Any(x => x.name == "Client"))
+      {
+        connection.CreateTableAsync<Client>().GetAwaiter().GetResult();
+      }
+
+      if (!existingTables.Any(x => x.name == "Category"))
+      {
+        connection.CreateTableAsync<Category>().GetAwaiter().GetResult();
+      }
+
+      if (!existingTables.Any(x => x.name == "Document"))
+      {
+        connection.CreateTableAsync<Document>().GetAwaiter().GetResult();
+      }
+
+      if (!existingTables.Any(x => x.name == "DefaultCategory"))
+      {
+        connection.CreateTableAsync<DefaultCategory>().GetAwaiter().GetResult();
+      }
     }
   }
 }

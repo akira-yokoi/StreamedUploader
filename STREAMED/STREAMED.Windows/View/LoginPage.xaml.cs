@@ -34,8 +34,6 @@ namespace STREAMED
 
     private void Page_Loaded(object sender, RoutedEventArgs e)
     {
-      this.initTable();
-
       // メールアドレスが保存されている場合は前回のログイン情報でログイン
       String mailAddress = SettingUtil.getString(SettingUtil.MAILADDRESS_KEY);
       if (!StringUtil.isEmpty(mailAddress))
@@ -252,36 +250,6 @@ namespace STREAMED
           break;
       }
       return errorMessage;
-    }
-
-    private void initTable()
-    {
-      DatabaseManager dbManager = DatabaseManager.GetInstance();
-
-      SQLiteAsyncConnection connection = dbManager.getConnection();
-      var existingTables = connection.QueryAsync<SqliteMaster>("SELECT name FROM sqlite_master WHERE type='table' ORDER BY name;")
-.GetAwaiter()
-.GetResult();
-
-      if (existingTables.Any(x => x.name == "Client") != true)
-      {
-        connection.CreateTableAsync<Client>().GetAwaiter().GetResult();
-      }
-
-      if (existingTables.Any(x => x.name == "Category") != true)
-      {
-        connection.CreateTableAsync<Category>().GetAwaiter().GetResult();
-      }
-
-      if (existingTables.Any(x => x.name == "Document") != true)
-      {
-        connection.CreateTableAsync<Document>().GetAwaiter().GetResult();
-      }
-
-      if (existingTables.Any(x => x.name == "DefaultCategory") != true)
-      {
-        connection.CreateTableAsync<DefaultCategory>().GetAwaiter().GetResult();
-      }
     }
   }
 }
