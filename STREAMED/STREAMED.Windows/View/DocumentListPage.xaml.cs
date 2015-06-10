@@ -91,6 +91,7 @@ namespace STREAMED
         document.CreditUserCategory = scanSetting.creditUserCategory;
 
         document.BMP = await lfMan.getBitmapImage(item.Name);
+        document.ImagePath = item.Name;
 
         documentList.Add(document);
       }
