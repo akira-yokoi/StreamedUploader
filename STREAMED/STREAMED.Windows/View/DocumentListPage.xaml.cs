@@ -73,7 +73,7 @@ namespace STREAMED
 
     private async void loadDocument()
     {
-      List<Document> documentList = new List<Document>();
+      documentList = new List<Document>();
 
       var lfMan = LocalFileManager.SharedManager;
       var files = await lfMan.getImageFiles();
@@ -83,12 +83,15 @@ namespace STREAMED
       {
         Document document = new Document();
         document.DocumentType = ScanSetting.DOC_TYPE_RECEIPT;
-        document.DebitCategoryId = scanSetting.debitCategoryId;
-        document.DebitCategoryName = scanSetting.debitCategoryName;
-        document.DebitUserCategory = scanSetting.debitUserCategory;
-        document.CreditCategoryId = scanSetting.creditCategoryId;
-        document.CreditCategoryName = scanSetting.creditCategoryName;
-        document.CreditUserCategory = scanSetting.creditUserCategory;
+        if (scanSetting != null)
+        {
+          document.DebitCategoryId = scanSetting.debitCategoryId;
+          document.DebitCategoryName = scanSetting.debitCategoryName;
+          document.DebitUserCategory = scanSetting.debitUserCategory;
+          document.CreditCategoryId = scanSetting.creditCategoryId;
+          document.CreditCategoryName = scanSetting.creditCategoryName;
+          document.CreditUserCategory = scanSetting.creditUserCategory;
+        }
 
         document.BMP = await lfMan.getBitmapImage(item.Name);
         document.ImagePath = item.Name;
@@ -155,7 +158,20 @@ namespace STREAMED
     private void itemGridView_ItemClick(object sender, ItemClickEventArgs e)
     {
       Document document = (Document)e.ClickedItem;
-      this.Frame.Navigate(typeof(DocumentDetailPage), document);
+      DocumentPreviewModel model = new DocumentPreviewModel();
+      model.document = document;
+      model.listItems = this.defaultViewModel["Items"] as List<Document>;
+      int idx = 0;
+      foreach(var item in model.listItems)
+      {
+        if(item.Equals(document))
+        {
+          model.currentIndex = idx;
+          break;
+        }
+        idx++;
+      }
+      this.Frame.Navigate(typeof(DocumentDetailPage), model);
     }
   }
 }

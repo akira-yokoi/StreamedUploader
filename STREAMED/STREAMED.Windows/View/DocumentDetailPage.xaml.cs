@@ -17,6 +17,7 @@ using Windows.UI.Xaml.Media.Imaging;
 using Windows.Storage;
 using Windows.Storage.Streams;
 using STREAMED.Model;
+using System.Threading.Tasks;
 
 // The Basic Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234237
 
@@ -28,6 +29,8 @@ namespace STREAMED
   public sealed partial class DocumentDetailPage : Page
   {
     private Document document;
+    private List<Document> documentList;
+    private int pageIndex;
 
     private NavigationHelper navigationHelper;
     private ObservableDictionary defaultViewModel = new ObservableDictionary();
@@ -97,7 +100,17 @@ namespace STREAMED
 
     protected override async void OnNavigatedTo(NavigationEventArgs e)
     {
-      document = (Document)e.Parameter;
+      var model = (DocumentPreviewModel)e.Parameter;
+
+      document = model.document;
+      pageIndex = model.currentIndex;
+      documentList = model.listItems;
+
+      await loadDocument();
+    }
+
+    private async Task loadDocument()
+    {
       var lfMan = LocalFileManager.SharedManager;
       var bmp = await lfMan.getBitmapImage(document.ImagePath);
 
@@ -117,6 +130,9 @@ namespace STREAMED
       // 画像倍率調整
       float? rate = ((float)scrView.ActualWidth) / ((float)bmp.PixelWidth);
       scrView.ChangeView(null, null, rate);
+
+      prevImageButton.IsEnabled = pageIndex > 0;
+      nextImageButton.IsEnabled = pageIndex < (documentList.Count-1);
     }
 
 
@@ -240,14 +256,24 @@ namespace STREAMED
       tr.ScaleX = tr.ScaleY = tr.ScaleX * scale;
     }
 
-    private void prevImageButton_Click(object sender, RoutedEventArgs e)
+    private async void prevImageButton_Click(object sender, RoutedEventArgs e)
     {
-
+      if(pageIndex > 0)
+      {
+        pageIndex--;
+        document = documentList[pageIndex];
+        await loadDocument();
+      }
     }
 
-    private void nextImageButton_Click(object sender, RoutedEventArgs e)
+    private async void nextImageButton_Click(object sender, RoutedEventArgs e)
     {
-
+      if(pageIndex < (documentList.Count - 1))
+      {
+        pageIndex++;
+        document = documentList[pageIndex];
+        await loadDocument();
+      }
     }
   }
 }

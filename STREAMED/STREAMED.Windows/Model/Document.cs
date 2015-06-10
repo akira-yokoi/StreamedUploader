@@ -10,7 +10,7 @@ namespace STREAMED
   /**
    * スキャンしたドキュメント情報を保持するクラス
    */
-  class Document
+  public class Document
   {
     public static int STATUS_WAIT_UPLOAD = 1;
     public static int STATUS_UPLOADED = 3;
