@@ -17,6 +17,8 @@ using Windows.UI.Xaml.Media.Imaging;
 using Windows.Storage;
 using Windows.Storage.Streams;
 using STREAMED.Model;
+using System.Threading.Tasks;
+using Windows.Graphics.Imaging;
 
 // The Basic Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234237
 
@@ -27,7 +29,14 @@ namespace STREAMED
   /// </summary>
   public sealed partial class DocumentDetailPage : Page
   {
+    enum RotateType
+    {
+      RotateLeft,RotateRight
+    };
+
     private Document document;
+    private List<Document> documentList;
+    private int pageIndex;
 
     private NavigationHelper navigationHelper;
     private ObservableDictionary defaultViewModel = new ObservableDictionary();
@@ -97,7 +106,17 @@ namespace STREAMED
 
     protected override async void OnNavigatedTo(NavigationEventArgs e)
     {
-      document = (Document)e.Parameter;
+      var model = (DocumentPreviewModel)e.Parameter;
+
+      document = model.document;
+      pageIndex = model.currentIndex;
+      documentList = model.listItems;
+
+      await loadDocument();
+    }
+
+    private async Task loadDocument()
+    {
       var lfMan = LocalFileManager.SharedManager;
       var bmp = await lfMan.getBitmapImage(document.ImagePath);
 
@@ -115,8 +134,13 @@ namespace STREAMED
       BitmapImage bmp = sender as BitmapImage;
 
       // 画像倍率調整
-      float? rate = ((float)scrView.ActualWidth) / ((float)bmp.PixelWidth);
+      float rate1 = ((float)scrView.ActualWidth) / ((float)bmp.PixelWidth);
+      float rate2 = ((float)scrView.ActualHeight) / ((float)bmp.PixelHeight);
+      float? rate = Math.Min(rate1, rate2);
       scrView.ChangeView(null, null, rate);
+
+      prevImageButton.IsEnabled = pageIndex > 0;
+      nextImageButton.IsEnabled = pageIndex < (documentList.Count-1);
     }
 
 
@@ -125,66 +149,73 @@ namespace STREAMED
       this.Frame.GoBack();
     }
 
-    private void deleteButton_Click(object sender, RoutedEventArgs e)
+    private async void deleteButton_Click(object sender, RoutedEventArgs e)
     {
-
+      LocalFileManager lfMan = LocalFileManager.SharedManager;
+      bool ret = await lfMan.deleteImageFile(document.ImagePath);
+      if(ret)
+      {
+        this.Frame.GoBack();
+      }
     }
 
     private async void rotateRight_Click(object sender, RoutedEventArgs e)
     {
-      var picker = new Windows.Storage.Pickers.FileOpenPicker();
-      picker.FileTypeFilter.Add(".jpg");
-      picker.FileTypeFilter.Add(".jpeg");
-      picker.FileTypeFilter.Add(".png");
-      StorageFile file = await picker.PickSingleFileAsync();
+      await rotateImage(RotateType.RotateRight);
+    }
 
-      //      StorageFile file = await StorageFile.GetFileFromPathAsync(document.ImagePath);
-      BitmapImage bitmap = new BitmapImage(new Uri(document.ImagePath));
+    private async void rotateLeft_Click(object sender, RoutedEventArgs e)
+    {
+      await rotateImage(RotateType.RotateLeft);
+    }
 
-      var stream = await file.OpenAsync(Windows.Storage.FileAccessMode.ReadWrite);
-      var decoder = await Windows.Graphics.Imaging.BitmapDecoder.CreateAsync(stream);
+    #region private async Task rotateImage() : 画像回転
+    /// <summary>
+    /// 画像回転
+    /// </summary>
+    /// <param name="rtype"></param>
+    /// <returns></returns>
+    private async Task rotateImage(RotateType rtype)
+    {
+      var filename = document.ImagePath;
+      LocalFileManager lfMan = LocalFileManager.SharedManager;
+      var file = await lfMan.getStorageFileByFilename(filename);
+      if (file == null)
+        return;
 
-      var memStream = new Windows.Storage.Streams.InMemoryRandomAccessStream();
-      var encoder = await Windows.Graphics.Imaging.BitmapEncoder.CreateForTranscodingAsync(memStream, decoder);
+      var data = await FileIO.ReadBufferAsync(file);
 
-      StorageFolder localFolder = Windows.Storage.ApplicationData.Current.LocalFolder;
-      StorageFile localFile = await localFolder.CreateFileAsync(file.Name);
+      var ms = new InMemoryRandomAccessStream();
+      var dw = new DataWriter(ms);
+      dw.WriteBuffer(data);
+      await dw.StoreAsync();
+      ms.Seek(0);
 
-      encoder.BitmapTransform.Rotation = Windows.Graphics.Imaging.BitmapRotation.Clockwise90Degrees;
-      encoder.BitmapTransform.InterpolationMode = Windows.Graphics.Imaging.BitmapInterpolationMode.Fant;
+      var bm = new BitmapImage();
+      await bm.SetSourceAsync(ms);
 
-      try
+      var wb = new WriteableBitmap(bm.PixelWidth, bm.PixelHeight);
+      ms.Seek(0);
+
+      await wb.SetSourceAsync(ms);
+      var wb2 = wb.Rotate(rtype == RotateType.RotateLeft ? 270 : 90);
+
+      using (IRandomAccessStream stream = await file.OpenAsync(FileAccessMode.ReadWrite))
       {
+        BitmapEncoder encoder = await BitmapEncoder.CreateAsync(
+            BitmapEncoder.PngEncoderId, stream);
+        Stream pixelStream = wb2.PixelBuffer.AsStream();
+        byte[] pixels = new byte[pixelStream.Length];
+        await pixelStream.ReadAsync(pixels, 0, pixels.Length);
+
+        encoder.SetPixelData(BitmapPixelFormat.Bgra8, BitmapAlphaMode.Ignore,
+            (uint)wb2.PixelWidth, (uint)wb2.PixelHeight, 96.0, 96.0, pixels);
         await encoder.FlushAsync();
       }
-      catch (Exception err)
-      {
-        switch (err.HResult)
-        {
-          case unchecked((int)0x88982F81): //WINCODEC_ERR_UNSUPPORTEDOPERATION
-            // If the encoder does not support writing a thumbnail, then try again
-            // but disable thumbnail generation.
-            encoder.IsThumbnailGenerated = false;
-            break;
-          default:
-            throw err;
-        }
-      }
 
-      // Overwrite the contents of the file with the updated image stream.
-      memStream.Seek(0);
-      stream.Seek(0);
-      stream.Size = 0;
-      await RandomAccessStream.CopyAsync(memStream, stream);
-
-      stream.Dispose();
-      memStream.Dispose();
+      await loadDocument();
     }
-
-    private void rotateLeft_Click(object sender, RoutedEventArgs e)
-    {
-
-    }
+    #endregion
 
     private void image1_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
     {
@@ -240,14 +271,24 @@ namespace STREAMED
       tr.ScaleX = tr.ScaleY = tr.ScaleX * scale;
     }
 
-    private void prevImageButton_Click(object sender, RoutedEventArgs e)
+    private async void prevImageButton_Click(object sender, RoutedEventArgs e)
     {
-
+      if(pageIndex > 0)
+      {
+        pageIndex--;
+        document = documentList[pageIndex];
+        await loadDocument();
+      }
     }
 
-    private void nextImageButton_Click(object sender, RoutedEventArgs e)
+    private async void nextImageButton_Click(object sender, RoutedEventArgs e)
     {
-
+      if(pageIndex < (documentList.Count - 1))
+      {
+        pageIndex++;
+        document = documentList[pageIndex];
+        await loadDocument();
+      }
     }
   }
 }

@@ -53,10 +53,29 @@ namespace STREAMED.Model
       return flist;
     }
 
-    public async Task<BitmapImage> getBitmapImage(string filename)
+    public async Task<StorageFile> getStorageFileByFilename(string filename)
     {
       var folder = await getStreamedFolder();
       var file = await folder.GetFileAsync(filename);
+
+      return file;
+    }
+
+    public async Task<bool> deleteImageFile(string filename)
+    {
+      bool ret = false;
+      var file = await getStorageFileByFilename(filename);
+      if(file != null && file.IsAvailable)
+      {
+        await file.DeleteAsync(StorageDeleteOption.Default);
+        ret = true;
+      }
+      return ret;
+    }
+
+    public async Task<BitmapImage> getBitmapImage(string filename)
+    {
+      var file = await getStorageFileByFilename(filename);
       var stream = await file.OpenReadAsync();
       var bmp = new BitmapImage();
       bmp.SetSource(stream);
@@ -65,8 +84,7 @@ namespace STREAMED.Model
 
     public async Task<string> getImageBase64(string filename)
     {
-      var folder = await getStreamedFolder();
-      var file = await folder.GetFileAsync(filename);
+      var file = await getStorageFileByFilename(filename);
       var stream = await file.OpenReadAsync();
       var decoder = await BitmapDecoder.CreateAsync(stream);
       var pixels = await decoder.GetPixelDataAsync();
