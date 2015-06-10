@@ -114,7 +114,9 @@ namespace STREAMED
       await lfMan.getStreamedFolder();
 
       // ダミーファイル作成
-      await lfMan.createDummyFiles();
+      await DummyModel.TruncateDocumentTable();
+      await DummyModel.DeleteAllPictures();
+      await DummyModel.CreateDocumentData();
 
       // デバイスID作成
       DeviceID.CreateDeviceID();

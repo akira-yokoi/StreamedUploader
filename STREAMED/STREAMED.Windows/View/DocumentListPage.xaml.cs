@@ -73,9 +73,25 @@ namespace STREAMED
 
     private async void loadDocument()
     {
-      documentList = new List<Document>();
-
       var lfMan = LocalFileManager.SharedManager;
+      var dman = DatabaseManager.GetInstance();
+      var con = dman.getConnection();
+      if(scanSetting != null)
+      {
+        var query = con.Table<Document>();
+        documentList = await query.Where(x => x.ClientId == scanSetting.clientId).ToListAsync();
+      }
+      else
+      {
+        documentList = await con.Table<Document>().ToListAsync();
+      }
+
+      foreach(var doc in documentList)
+      {
+        doc.BMP = await lfMan.getBitmapImage(doc.ImagePath);
+      }
+
+      /*
       var files = await lfMan.getImageFiles();
       var folder = await lfMan.getStreamedFolder();
 
@@ -98,6 +114,7 @@ namespace STREAMED
 
         documentList.Add(document);
       }
+      */
 
       /*
       for (int cnt = 0; cnt < 50; cnt++)

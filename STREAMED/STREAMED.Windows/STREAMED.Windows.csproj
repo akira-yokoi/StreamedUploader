@@ -142,6 +142,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Model\DocumentPreviewModel.cs" />
+    <Compile Include="Model\DummyModel.cs" />
     <Compile Include="Model\LocalFileManager.cs" />
     <Compile Include="Model\DefaultCategory.cs" />
     <Compile Include="Model\DocumentSummary.cs" />
