@@ -146,7 +146,6 @@ namespace STREAMED
             {
               await con.InsertAllAsync(clientList);
             }
-            Log.debug("ClientSynced");
           }
           catch(SQLiteException ex)
           {
