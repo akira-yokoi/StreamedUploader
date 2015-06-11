@@ -137,7 +137,7 @@
         <Border Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Style="{StaticResource UploadBorderStyle}" Width="400" Height="100" Margin="0,0,0,40">
             <Button x:Name="uploadButton" Style="{StaticResource UploadButtonStyle}" Width="400" Height="100" Click="uploadButton_Click">
                 <StackPanel VerticalAlignment="Center" Orientation="Horizontal">
-                    <TextBlock FontFamily="{StaticResource flaticon}" Text="&#xe006;" Style="{StaticResource UploadIconStyle}" />
+                    <TextBlock FontFamily="{StaticResource flaticon}" Text="&#xE002;" Style="{StaticResource UploadIconStyle}" />
                     <TextBlock Text="アップロード" Style="{StaticResource UploadTextStyle}" VerticalAlignment="Center"/>
                 </StackPanel>
             </Button>
